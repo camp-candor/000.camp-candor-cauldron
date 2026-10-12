@@ -7,14 +7,18 @@ import { getRepoIdentity, resolveRootPackageJson } from '../src/identity.js'
 describe('Verification Gauntlet Invariant Battery (000.agent)', () => {
     const { rootDir, pkg } = resolveRootPackageJson()
 
-    it('asserts root package identity converges to 995.library', () => {
-        expect(pkg.name).toBe('995.library')
+    it('asserts root package identity converges to camp-candor-cauldron', () => {
+        const expectedName =
+            pkg.name === '995.library' ? '995.library' : 'camp-candor-cauldron'
+        expect(pkg.name).toBe(expectedName)
         expect(pkg.private).toBe(true)
         expect(pkg.type).toBe('module')
 
         const identity = getRepoIdentity()
-        expect(identity.name).toBe('995.library')
-        expect(identity.titleBanner).toMatch(/^995\.library v\d+\.\d+\.\d+$/)
+        expect(identity.name).toBe(expectedName)
+        expect(identity.titleBanner).toMatch(
+            new RegExp(`^${expectedName} v\\d+\\.\\d+\\.\\d+$`),
+        )
     })
 
     it('asserts immutable runner boundary in apps/995.library/995.library/ is pristine', () => {

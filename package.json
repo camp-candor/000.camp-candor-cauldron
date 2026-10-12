@@ -29,7 +29,7 @@
         "//__ TESTING ______________________________": "",
         "test": "npm run test:agent && npm run test:library",
         "test:agent": "npm run test --workspace=@camp_candor/000.agent",
-        "test:library": "npm run test --workspace=@camp_candor/995.library",
+        "test:library": "npm run test --workspace=@camp_candor/995.library -- --serial",
         "//__ CODE QUALITY & HYGIENE _______________": "",
         "fix": "npm run fix:all",
         "fix:all": "npm run prettier:fix && npm run lint:fix",

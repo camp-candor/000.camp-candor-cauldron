@@ -8,7 +8,11 @@ const dashboard = {
     },
 }
 
-export const initDashboard = (cpy: DashboardModel, bal: DashboardBit, ste: State) => {
+export const initDashboard = (
+    cpy: DashboardModel,
+    bal: DashboardBit,
+    ste: State,
+) => {
     const url =
         process.env.DASHBOARD_URL ||
         'https://zero00-dashboard.onrender.com/api/dashboard/test'
@@ -30,7 +34,10 @@ export const initDashboard = (cpy: DashboardModel, bal: DashboardBit, ste: State
             .catch((error: any) => {
                 if (bal.slv != null) {
                     bal.slv({
-                        intBit: { idx: 'init-dashboard-err', dat: error.message },
+                        intBit: {
+                            idx: 'init-dashboard-err',
+                            dat: error.message,
+                        },
                     })
                 }
             })
@@ -52,7 +59,11 @@ export const updateDashboard = (
     return cpy
 }
 
-export const testDashboard = (cpy: DashboardModel, bal: DashboardBit, ste: State) => {
+export const testDashboard = (
+    cpy: DashboardModel,
+    bal: DashboardBit,
+    ste: State,
+) => {
     bal.slv({ mytBit: { idx: 'test-dashboard', val: 1 } })
     return cpy
 }
