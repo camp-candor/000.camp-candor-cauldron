@@ -1,0 +1,14 @@
+{
+    "name": "@camp_candor/000.agent",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "terminal": {
+        "globalKey": "AGENT",
+        "menuTitle": "AGENT MENU",
+        "menuDesc": "Open the Agent Cockpit menu\nto run system diagnostics."
+    },
+    "scripts": {
+        "test": "vitest run"
+    }
+}

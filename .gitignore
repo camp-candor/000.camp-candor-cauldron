@@ -1,0 +1,80 @@
+# Logs
+logs
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Test coverage
+coverage
+*.lcov
+.nyc_output
+
+# Build & TypeScript caches
+dist
+*.tsbuildinfo
+.eslintcache
+
+# Dependency directories
+node_modules/
+
+# Archive & Packaging outputs
+*.tgz
+*.zip
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Environment & Secret files
+.env*
+!.env*.example
+
+# Source-emitted JS/DTS
+*.js.map
+*.d.ts.map
+*.mjs.map
+*.cjs.map
+
+# Allow root configuration files & scripts
+!*.config.mjs
+!*.config.js
+!.*.mjs
+
+# Package Source code exceptions
+!packages/*/src/types/
+!packages/000.agent/
+
+# Scratch & Temporary Testing Folders
+scratch/
+scratch_*
+temp/
+tmp/
+examples/
+!/notes/scratch
+
+# Library Snapshots & Scaffold Templates
+!data/flat/
+!data/unit/
+.tmp_*
+apps/995.library/scratch_*
+data/saga/active.json
+*.Atomic-Staging.md
+903.Atomic-Staging.md
+/data/flat
+/data/scratch-pad.md
+
+# Package Scaffolding Staging
+data/package/
+/data/package

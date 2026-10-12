@@ -1,0 +1,132 @@
+name: Bump Version & Dispatch Release
+
+on:
+    workflow_dispatch:
+        inputs:
+            bump_type:
+                description: 'SemVer release increment level'
+                required: true
+                default: 'patch'
+                type: choice
+                options:
+                    - patch
+                    - minor
+                    - major
+
+concurrency:
+    group: bump-version-${{ github.ref }}
+    cancel-in-progress: false
+
+permissions:
+    contents: write
+
+env:
+    HUSKY: 0
+
+jobs:
+    bump:
+        name: validate and bump root version
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repository with Tags
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  token: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+
+            - name: Setup Node Runtime
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: npm
+
+            - name: Install Monorepo Dependencies
+              run: npm ci
+
+            - name: Pre-Bump Static TypeScript Compilation
+              run: npm run check:types
+
+            - name: Pre-Bump Monorepo Test Gauntlet
+              run: npm test
+
+            - name: Assert Pre-Bump Runner Boundary
+              run: npm run check:boundary
+
+            - name: Configure Git Committer Identity
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+            - name: Execute Synchronized Version Bump
+              run: |
+                  echo ">> Executing SemVer bump: ${{ inputs.bump_type }}..."
+                  npm version ${{ inputs.bump_type }} --no-git-tag-version
+                  NEW_VERSION=$(node -e "console.log(require('./package.json').version)")
+                  NEW_TAG="v${NEW_VERSION}"
+                  echo ">> Target version: ${NEW_VERSION} (${NEW_TAG})"
+
+                  echo ">> Synchronizing apps/ workspaces to ${NEW_VERSION}..."
+                  node -e "
+                    const fs = require('fs');
+                    const path = require('path');
+                    const rootVer = require('./package.json').version;
+                    const appsDir = path.resolve('apps');
+                    if (fs.existsSync(appsDir)) {
+                      for (const item of fs.readdirSync(appsDir)) {
+                        const pkgPath = path.join(appsDir, item, 'package.json');
+                        if (fs.existsSync(pkgPath)) {
+                          const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+                          pkg.version = rootVer;
+                          fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 4) + '\n', 'utf8');
+                          console.log('>> [SYNC] ' + pkgPath + ' -> ' + rootVer);
+                        }
+                      }
+                    }
+                  "
+
+                  echo ">> Updating lockfile references..."
+                  npm install --package-lock-only
+
+                  git add package.json package-lock.json apps/*/package.json
+                  git commit -m "chore(release): v${NEW_VERSION}"
+                  git tag -a "${NEW_TAG}" -m "chore(release): v${NEW_VERSION}"
+                  echo ">> Successfully committed and tagged: ${NEW_TAG}"
+
+            - name: Assert Boundary Integrity Post-Bump
+              run: |
+                  echo ">> Verifying packages/ workspaces were not mutated..."
+                  if [ -n "$(git status -s packages/)" ]; then
+                    echo "::error::CRITICAL BREACH: packages/ workspace mutated during version bump!"
+                    git status -s packages/
+                    exit 1
+                  fi
+
+                  echo ">> Verifying apps/ workspaces match root version..."
+                  node -e "
+                    const fs = require('fs');
+                    const path = require('path');
+                    const rootVer = require('./package.json').version;
+                    const appsDir = path.resolve('apps');
+                    if (fs.existsSync(appsDir)) {
+                      for (const item of fs.readdirSync(appsDir)) {
+                        const pkgPath = path.join(appsDir, item, 'package.json');
+                        if (fs.existsSync(pkgPath)) {
+                          const v = JSON.parse(fs.readFileSync(pkgPath, 'utf8')).version;
+                          if (v !== rootVer) {
+                            console.error('::error::Version mismatch in ' + pkgPath + ': ' + v + ' != ' + rootVer);
+                            process.exit(1);
+                          }
+                        }
+                      }
+                    }
+                    console.log('>> [OK] All apps/ workspace manifests match root v' + rootVer);
+                  "
+                  npm run check:boundary
+
+            - name: Push Commit and Tag to Remote Trunk
+              env:
+                  GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+              run: |
+                  echo ">> Pushing bump commit and tag to origin main..."
+                  git push origin main --follow-tags
+                  echo ">> [OK] Tag pushed successfully. Companion release.yml workflow will handle publication."

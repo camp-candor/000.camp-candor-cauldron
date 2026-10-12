@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "noEmit": true,
+
+        // STRICTNESS LEVEL 100
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
+
+        "skipLibCheck": true,
+        "baseUrl": ".",
+        "paths": {
+            "@camp_candor/000.agent": ["./packages/000.agent/BEE.ts"]
+        }
+    },
+    "files": [],
+    "exclude": ["node_modules", "dist"],
+    "references": [{ "path": "./packages/000.agent" }],
+    "include": [
+        "vitest.config.ts",
+        "vitest.workspace.ts",
+        "vitest.audit.config.ts"
+    ]
+}

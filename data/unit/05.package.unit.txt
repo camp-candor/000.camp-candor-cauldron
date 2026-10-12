@@ -1,0 +1,116 @@
+// ----- SOURCE: apps/995.library/995.library/05.package.unit/buz/package.buzz.ts -----
+export const initPackage = (cpy: PackageModel, bal:PackageBit, ste: State) => {
+ debugger
+ return cpy;
+};
+
+export const updatePackage = (cpy: PackageModel, bal:PackageBit, ste: State) => {
+ return cpy;
+};
+
+
+import { PackageModel } from "../package.model";
+import PackageBit from "../fce/package.bit";
+import State from "../../99.core/state";
+
+export const createPackage = async ( cpy: PackageModel, bal: PackageBit, ste: State,) => { if (ste) { await ste.hunt('[Console action] Update Console', { idx: 'cns00', src: '>> Executing createPackage stub', }) } if (bal && bal.slv != null) { bal.slv({ createBit: { idx: 'createPackage-stub' } }) } return cpy}
+
+
+// ----- SOURCE: apps/995.library/995.library/05.package.unit/fce/package.bit.ts -----
+
+export default interface PackageBit {
+ idx: string;
+ src?: string;
+ val?: number;
+ dat?: any;
+ slv?: Function;
+}
+
+
+
+
+// ----- SOURCE: apps/995.library/995.library/05.package.unit/fce/package.interface.ts -----
+
+import  PackageBit  from "./package.bit";
+
+export default interface Package {
+ // idx:string;
+ // packageBitList: PackageBit[];
+ // packageBits:any;
+
+}
+
+
+// ----- SOURCE: apps/995.library/995.library/05.package.unit/package.action.ts -----
+import { Action } from "../99.core/interface/action.interface";
+import  PackageBit  from "./fce/package.bit";
+
+// Package actions
+
+export const INIT_PACKAGE = "[Package action] Init Package";
+export class InitPackage implements Action {
+ readonly type = INIT_PACKAGE;
+ constructor(public bale: PackageBit) {}
+}
+
+export const UPDATE_PACKAGE = "[Package action] Update Package";
+export class UpdatePackage implements Action {
+ readonly type = UPDATE_PACKAGE;
+ constructor(public bale: PackageBit) {}
+}
+
+export const CREATE_PACKAGE = "[Create action] Create Package";export class CreatePackage implements Action { readonly type = CREATE_PACKAGE; constructor(public bale: PackageBit) {}}
+
+export type Actions = | InitPackage | UpdatePackage
+    | CreatePackage;
+
+
+// ----- SOURCE: apps/995.library/995.library/05.package.unit/package.buzzer.ts -----
+export { initPackage  } from "./buz/package.buzz";
+export { updatePackage  } from "./buz/package.buzz";
+export { createPackage } from "./buz/package.buzz";
+
+
+// ----- SOURCE: apps/995.library/995.library/05.package.unit/package.model.ts -----
+import Package from "./fce/package.interface";
+import PackageBit from "./fce/package.interface";
+
+export class PackageModel implements Package {
+ //idx:string;
+ //packageBitList: PackageBit[] = [];
+ //packageBits: any = {};
+}
+
+
+// ----- SOURCE: apps/995.library/995.library/05.package.unit/package.reduce.ts -----
+import clone from "clone-deep";
+import * as Act from "./package.action";
+import { PackageModel } from "./package.model";
+import * as Buzz from "./package.buzzer";
+import State from "../99.core/state";
+
+export function reducer(model: PackageModel = new PackageModel(), act: Act.Actions,  state?: State ) {
+ switch (act.type) {
+ 
+ case Act.UPDATE_PACKAGE:
+ return Buzz.updatePackage(clone(model), act.bale, state);
+
+ case Act.INIT_PACKAGE:
+ return Buzz.initPackage(clone(model), act.bale, state);
+ case Act.CREATE_PACKAGE: return Buzz.createPackage(clone(model), act.bale, state)
+
+
+ default:
+ return model;
+ }
+}
+
+
+// ----- SOURCE: apps/995.library/995.library/05.package.unit/package.unit.ts -----
+import State from "../99.core/state";
+
+export default class PackageUnit {
+
+ constructor(state: State) {
+ }
+}

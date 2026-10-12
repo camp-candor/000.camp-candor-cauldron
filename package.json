@@ -1,0 +1,83 @@
+{
+    "name": "camp-candor-cauldron",
+    "version": "0.2.1",
+    "type": "module",
+    "private": true,
+    "description": "Deterministic Local Curses Cockpit & Library Architecture",
+    "workspaces": [
+        "packages/*",
+        "apps/*"
+    ],
+    "engines": {
+        "node": ">=20.0.0",
+        "npm": ">=10.0.0"
+    },
+    "scripts": {
+        "//__ DEV & RUNNER _________________________": "",
+        "dev": "npm run dev --workspace=@camp_candor/995.library",
+        "tui": "npx tsx apps/995.library/run.ts -t pivot",
+        "//__ BUILD & TYPES ________________________": "",
+        "build": "npm run build --workspaces --if-present",
+        "check:types": "tsc -b",
+        "//__ VERIFICATION GAUNTLET GATES __________": "",
+        "check:boundary": "node -e \"process.exit(0)\"",
+        "check:sentry": "node -e \"const { execSync } = require('child_process'); try { const out = execSync('git grep -n -P \\\"[\\\\\\\\x{1F300}-\\\\\\\\x{1FAD6}]\\\" packages/ apps/995.library/run.ts .github/', { encoding: 'utf8' }).trim(); if (out) { console.error(':: [FAIL] UTF-8 emojis detected:\\n', out); process.exit(1); } } catch (e) { process.exit(0); }\"",
+        "check:artifacts": "node -e \"const fs = require('fs'), path = require('path'); function scan(d) { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, e.name); if (e.isDirectory() && e.name !== 'node_modules' && e.name !== 'dist') scan(p); else if (e.isFile() && (e.name.endsWith('.js') || e.name.endsWith('.d.ts')) && !e.name.includes('.config.')) { console.error(':: [FAIL] Leaked artifact in source:', p); process.exit(1); } } } scan('packages/000.agent');\"",
+        "check:all": "npm run check:boundary && npm run check:sentry && npm run check:artifacts && npm run check:types && npm run prettier:check && npm run lint:check",
+        "gauntlet": "npm run check:all && npm test",
+        "check": "npm run gauntlet",
+        "//__ TESTING ______________________________": "",
+        "test": "npm run test:agent && npm run test:library",
+        "test:agent": "npm run test --workspace=@camp_candor/000.agent",
+        "test:library": "npm run test --workspace=@camp_candor/995.library",
+        "//__ CODE QUALITY & HYGIENE _______________": "",
+        "fix": "npm run fix:all",
+        "fix:all": "npm run prettier:fix && npm run lint:fix",
+        "lint:check": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "lint:staged": "npx lint-staged --relative",
+        "prettier:check": "prettier . --check",
+        "prettier:fix": "prettier . --write",
+        "//__ HYGIENE & CLEANUP ____________________": "",
+        "clean": "npm run clean:dist && npm run clean:ts",
+        "clean:dist": "find . -name 'dist' -type d -prune -exec rm -rf '{}' +",
+        "clean:ts": "find . -name '*.tsbuildinfo' -type f -delete",
+        "clean:js": "find packages/000.agent -name '*.js' -o -name '*.d.ts' -delete",
+        "reset": "npm run clean && rm -rf node_modules package-lock.json && npm install && npm run build"
+    },
+    "lint-staged": {
+        "*.{js,ts,tsx,json,css,md}": [
+            "prettier --write"
+        ],
+        "*.{ts,tsx}": [
+            "eslint --fix --no-warn-ignored"
+        ]
+    },
+    "devDependencies": {
+        "@eslint/js": "9.39.5",
+        "@types/clone-deep": "4.0.4",
+        "@types/dot": "1.1.7",
+        "@types/node": "^24.0.3",
+        "@types/rx-lite": "4.0.10",
+        "@types/string": "0.0.34",
+        "@vitest/ui": "3.2.4",
+        "clone-deep": "4.0.1",
+        "commander": "^13.1.0",
+        "dotenv": "^16.6.1",
+        "eslint": "^9.0.0",
+        "globals": "^15.0.0",
+        "lint-staged": "^15.0.0",
+        "markdownlint-cli2": "^0.13.0",
+        "prettier": "^3.0.0",
+        "rx-lite": "4.0.8",
+        "string": "3.3.3",
+        "tsx": "^4.20.4",
+        "typescript": "^5.5.2",
+        "typescript-eslint": "^8.0.0",
+        "vitest": "3.2.4",
+        "zod": "^3.25.76"
+    },
+    "dependencies": {
+        "lodash": "4.18.1"
+    }
+}

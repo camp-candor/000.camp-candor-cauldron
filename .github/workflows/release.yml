@@ -1,0 +1,94 @@
+name: Publish GitHub Release
+
+on:
+    push:
+        tags:
+            - 'v*.*.*'
+
+concurrency:
+    group: release-${{ github.ref }}
+    cancel-in-progress: false
+
+permissions:
+    contents: write
+
+env:
+    HUSKY: 0
+
+jobs:
+    release:
+        name: verify and publish release
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Full Repository History
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node Runtime
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: npm
+
+            - name: Install Monorepo Dependencies
+              run: npm ci
+
+            - name: Assert Synchronized Workspace Versions
+              env:
+                  TAG_NAME: ${{ github.ref_name }}
+              run: |
+                  echo ">> Validating that root and apps/ package versions match release tag: ${TAG_NAME}..."
+                  node -e "
+                    const fs = require('fs');
+                    const path = require('path');
+                    const refTag = process.env.TAG_NAME || '';
+                    const expectedVer = refTag.replace(/^v/, '');
+                    const rootVer = require('./package.json').version;
+
+                    if (rootVer !== expectedVer) {
+                      console.error('::error::Root package.json (' + rootVer + ') does not match tag ' + refTag);
+                      process.exit(1);
+                    }
+
+                    const appsDir = path.resolve('apps');
+                    if (fs.existsSync(appsDir)) {
+                      for (const item of fs.readdirSync(appsDir)) {
+                        const pkgPath = path.join(appsDir, item, 'package.json');
+                        if (fs.existsSync(pkgPath)) {
+                          const childVer = JSON.parse(fs.readFileSync(pkgPath, 'utf8')).version;
+                          if (childVer !== expectedVer) {
+                            console.error('::error::Mismatch in ' + pkgPath + ' (' + childVer + ' != ' + expectedVer + ')');
+                            process.exit(1);
+                          }
+                        }
+                      }
+                    }
+                    console.log('>> [OK] Root and apps/ manifests are synchronized with tag: ' + refTag);
+                  "
+
+            - name: Verify Static TypeScript Project References
+              run: npm run check:types
+
+            - name: Execute Full Monorepo Test Gauntlet
+              run: npm test
+
+            - name: Assert Immutable Runner Boundary
+              run: |
+                  if [ -n "$(git status -s apps/995.library/995.library/)" ]; then
+                    echo "::error::IMMUTABLE HARNESS BOUNDARY BREACHED in apps/995.library/995.library/"
+                    git status -s apps/995.library/995.library/
+                    exit 1
+                  fi
+
+            - name: Mint and Publish GitHub Release
+              env:
+                  GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+              run: |
+                  TAG_NAME="${{ github.ref_name }}"
+                  echo "Publishing automated GitHub Release for ${TAG_NAME}..."
+                  gh release create "${TAG_NAME}" \
+                    --title "${TAG_NAME}: Edge DevOps Control Plane & Autonomous Agent Boilerplate" \
+                    --generate-notes \
+                    --latest
