@@ -1,0 +1,40 @@
+{
+  "sagaId": "saga-fs-1791841703086_yfr0o",
+  "sourceDir": "D:\\trellis\\995.library\\apps\\995.library",
+  "status": "RUNNING",
+  "targetsCompleted": [],
+  "targetsFailed": [],
+  "backups": {},
+  "records": {
+    "D:\\trellis\\000.camp-candor-cauldron\\apps\\995.library": {
+      "targetDir": "D:\\trellis\\000.camp-candor-cauldron\\apps\\995.library",
+      "state": "PENDING"
+    },
+    "D:\\trellis\\000.goblin-lore\\apps\\995.library": {
+      "targetDir": "D:\\trellis\\000.goblin-lore\\apps\\995.library",
+      "state": "PENDING"
+    },
+    "D:\\trellis\\000.goblin-spatial\\apps\\995.library": {
+      "targetDir": "D:\\trellis\\000.goblin-spatial\\apps\\995.library",
+      "state": "PENDING"
+    },
+    "D:\\trellis\\000.repo-bot\\apps\\995.library": {
+      "targetDir": "D:\\trellis\\000.repo-bot\\apps\\995.library",
+      "state": "PENDING"
+    },
+    "D:\\trellis\\000.series-dashboard\\apps\\995.library": {
+      "targetDir": "D:\\trellis\\000.series-dashboard\\apps\\995.library",
+      "state": "PENDING"
+    },
+    "D:\\trellis\\000.series-sower-engine\\apps\\995.library": {
+      "targetDir": "D:\\trellis\\000.series-sower-engine\\apps\\995.library",
+      "state": "PENDING"
+    },
+    "D:\\trellis\\npm-agent-01\\apps\\995.library": {
+      "targetDir": "D:\\trellis\\npm-agent-01\\apps\\995.library",
+      "state": "PENDING"
+    }
+  },
+  "createdAt": "2026-10-12T21:48:23.086Z",
+  "updatedAt": "2026-10-12T21:48:23.090Z"
+}

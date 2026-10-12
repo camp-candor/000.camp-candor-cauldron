@@ -1,3 +1,5 @@
+import * as ActDat from '../../03.data.unit/data.action'
+import * as ActDrt from '../../06.directive.unit/directive.action'
 /* eslint-disable */
 import { MenuModel } from '../menu.model'
 import MenuBit from '../fce/menu.bit'
@@ -57,6 +59,10 @@ export const libraryMenu = async (cpy: MenuModel, bal: MenuBit, ste: State) => {
         ActAct.UPDATE_ACTION.split(']')[1],
         ActUnt.CREATE_UNIT.split(']')[1],
         ActPkg.CREATE_PACKAGE.split(']')[1],
+        ActDrt.DAY_DIRECTIVE.split(']')[1],
+        ActDrt.CREATE_DIRECTIVE.split(']')[1],
+        ActDrt.PHASE_DIRECTIVE.split(']')[1],
+        ActDat.FLAT_DATA.split(']')[1],
         ActUnt.FLATTEN_UNIT.split(']')[1],
         ActLib.FLAT_LIBRARY.split(']')[1],
         ActLib.PROGRESS_LIBRARY.split(']')[1],
@@ -76,21 +82,31 @@ export const libraryMenu = async (cpy: MenuModel, bal: MenuBit, ste: State) => {
             '-Create a new unit\nwith a specified verb.',
         [ActPkg.CREATE_PACKAGE.split(']')[1]]:
             '-Scaffold a new package\ninto data/package.',
+        [ActDrt.DAY_DIRECTIVE.split(']')[1]]:
+            '-Provision the next sequential\nday directive in data/directive.',
+        [ActDrt.CREATE_DIRECTIVE.split(']')[1]]:
+            '-Scaffold focus divider and\npaired phase directives.',
+        [ActDrt.PHASE_DIRECTIVE.split(']')[1]]:
+            '-Increment and append the next\nphase pair to a chosen day.',
+        [ActDat.FLAT_DATA.split(']')[1]]:
+            '-Consolidate files in data/flatten\ninto a single file in data/flat.',
         [ActUnt.FLATTEN_UNIT.split(']')[1]]:
             '-Flatten a unit into\nits constituent files.',
         [ActLib.FLAT_LIBRARY.split(']')[1]]:
             '-Flatten library code\ninto data/flat.',
+        [ActLib.PROGRESS_LIBRARY.split(']')[1]]:
+            '-Synchronize 995.library across\nsibling repositories.',
         [ActLib.UPDATE_LIBRARY.split(']')[1]]:
             '-Regenerate the library\nwiring manifest (BEE.ts).',
         [ActLib.LIST_LIBRARY.split(']')[1]]:
             '-List all the units\ncurrently in the library.',
         [ActLib.AUDIT_LIBRARY.split(']')[1]]:
             '-Compare fleet repositories against\nthe Central Coordination Manifest.',
-        [ActLib.PROGRESS_LIBRARY.split(']')[1]]:
-            '-Synchronize 995.library across\nsibling repositories.',
         [ActLib.LAUNCH_LIBRARY.split(']')[1]]: '-Launch library urls.',
         'ROOT MENU': '-Return to the root menu.',
     }
+
+
 
     bit = await ste.hunt(ActGrd.UPDATE_GRID, {
         x: 0,
@@ -119,6 +135,151 @@ export const libraryMenu = async (cpy: MenuModel, bal: MenuBit, ste: State) => {
     src = bit?.chcBit?.src
 
     switch (src) {
+        case ActDrt.CREATE_DIRECTIVE.split(']')[1]: {
+            await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+
+            const FS = require('fs')
+            const path = require('path')
+            let parentDir = process.cwd()
+            while (
+                parentDir &&
+                !(
+                    FS.existsSync(path.join(parentDir, 'apps')) &&
+                    FS.existsSync(path.join(parentDir, 'packages')) &&
+                    FS.existsSync(path.join(parentDir, 'package.json'))
+                )
+            ) {
+                const parent = path.dirname(parentDir)
+                if (parent === parentDir) break
+                parentDir = parent
+            }
+
+            const directiveRootDir = path.join(parentDir, 'data', 'directive')
+            let dayDirs: string[] = []
+
+            if (FS.existsSync(directiveRootDir)) {
+                const entries = FS.readdirSync(directiveRootDir, { withFileTypes: true })
+                dayDirs = entries
+                    .filter((e: any) => e.isDirectory() && /^day-\d+/i.test(e.name))
+                    .map((e: any) => e.name)
+                    .sort((a: string, b: string) =>
+                        b.localeCompare(a, undefined, { numeric: true }),
+                    )
+            }
+
+            if (dayDirs.length === 0) {
+                await ste.hunt(ActCns.UPDATE_CONSOLE, {
+                    idx: 'cns00',
+                    src: '>> [NOTICE] No day directories found in data/directive/. Run Day Directive first.',
+                })
+                break
+            }
+
+            // Step 1: Select Day Directory Modal
+            bit = await ste.hunt(ActGrd.UPDATE_GRID, {
+                x: 0,
+                y: 4,
+                xSpan: 4,
+                ySpan: 12,
+            })
+            bit = await ste.hunt(ActChc.OPEN_CHOICE, {
+                dat: { clr0: Color.BLACK, clr1: Color.YELLOW },
+                src: Align.VERTICAL,
+                lst: dayDirs,
+                net: bit.grdBit.dat,
+            })
+            const selectedDay = bit?.chcBit?.src
+            if (!selectedDay) break
+
+            await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+
+            // Step 2: Input Focus Divider Label Modal
+            bit = await ste.hunt(ActGrd.UPDATE_GRID, {
+                x: 0,
+                y: 4,
+                xSpan: 4,
+                ySpan: 6,
+            })
+            bit = await ste.hunt(ActPut.OPEN_INPUT, {
+                dat: { clr0: Color.BLACK, clr1: Color.YELLOW },
+                src: Align.VERTICAL,
+                lst,
+                txt: 'input focus label (e.g. modernize-media-pipeline)',
+                net: bit.grdBit.dat,
+            })
+            const rawLabelInput = (bit?.putBit?.src || '').trim()
+            if (!rawLabelInput) break
+
+            await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+
+            // Step 3: Select Number of Phases Modal
+            const phaseOptions = [
+                '1 Phase',
+                '2 Phases',
+                '3 Phases',
+                '4 Phases',
+                '5 Phases',
+                'Custom',
+            ]
+            bit = await ste.hunt(ActGrd.UPDATE_GRID, {
+                x: 0,
+                y: 4,
+                xSpan: 4,
+                ySpan: 8,
+            })
+            bit = await ste.hunt(ActChc.OPEN_CHOICE, {
+                dat: { clr0: Color.BLACK, clr1: Color.YELLOW },
+                src: Align.VERTICAL,
+                lst: phaseOptions,
+                net: bit.grdBit.dat,
+            })
+            const phaseSelection = bit?.chcBit?.src
+            if (!phaseSelection) break
+
+            let finalPhaseCount = 1
+
+            if (phaseSelection === 'Custom') {
+                await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+                bit = await ste.hunt(ActGrd.UPDATE_GRID, {
+                    x: 0,
+                    y: 4,
+                    xSpan: 4,
+                    ySpan: 6,
+                })
+                bit = await ste.hunt(ActPut.OPEN_INPUT, {
+                    dat: { clr0: Color.BLACK, clr1: Color.YELLOW },
+                    src: Align.VERTICAL,
+                    lst,
+                    txt: 'input number of phases (integer)',
+                    net: bit.grdBit.dat,
+                })
+                const customInt = parseInt(bit?.putBit?.src || '1', 10)
+                finalPhaseCount = isNaN(customInt) || customInt < 1 ? 1 : customInt
+            } else {
+                finalPhaseCount = parseInt(phaseSelection.split(' ')[0], 10) || 1
+            }
+
+            await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+
+            // Step 4: Dispatch CREATE_DIRECTIVE
+            const createRes = await ste.hunt(ActDrt.CREATE_DIRECTIVE, {
+                src: selectedDay,
+                idx: rawLabelInput,
+                val: finalPhaseCount,
+            })
+
+            await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+            bit = await ste.hunt(ActMnu.PRINT_MENU, createRes)
+            break
+        }
+
+        case ActDrt.DAY_DIRECTIVE.split(']')[1]: {
+            await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+            bit = await ste.hunt(ActDrt.DAY_DIRECTIVE, {})
+            await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+            bit = await ste.hunt(ActMnu.PRINT_MENU, bit)
+            break
+        }
         case ActLib.LAUNCH_LIBRARY.split(']')[1]: {
             bit = await ste.hunt(ActLib.LAUNCH_LIBRARY, {})
             break
@@ -344,6 +505,143 @@ export const libraryMenu = async (cpy: MenuModel, bal: MenuBit, ste: State) => {
             })
             await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
             bit = await ste.hunt(ActMnu.PRINT_MENU, updateUnitBit)
+            break
+        }
+
+
+                case ActDrt.PHASE_DIRECTIVE.split(']')[1]: {
+            await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+
+            let parentDir = process.cwd()
+            while (
+                parentDir &&
+                !(
+                    FS.existsSync(path.join(parentDir, 'apps')) &&
+                    FS.existsSync(path.join(parentDir, 'packages')) &&
+                    FS.existsSync(path.join(parentDir, 'package.json'))
+                )
+            ) {
+                const parent = path.dirname(parentDir)
+                if (parent === parentDir) break
+                parentDir = parent
+            }
+
+            const directiveRootDir = path.join(parentDir, 'data', 'directive')
+            let dayDirs: string[] = []
+
+            if (FS.existsSync(directiveRootDir)) {
+                const entries = FS.readdirSync(directiveRootDir, { withFileTypes: true })
+                dayDirs = entries
+                    .filter((e: any) => e.isDirectory() && /^day-\d+/i.test(e.name))
+                    .map((e: any) => e.name)
+                    .sort((a: string, b: string) =>
+                        b.localeCompare(a, undefined, { numeric: true }),
+                    )
+            }
+
+            if (dayDirs.length === 0) {
+                await ste.hunt(ActCns.UPDATE_CONSOLE, {
+                    idx: 'cns00',
+                    src: '>> [NOTICE] No day directories found in data/directive/. Run Day Directive first.',
+                })
+                break
+            }
+
+            bit = await ste.hunt(ActGrd.UPDATE_GRID, {
+                x: 0,
+                y: 4,
+                xSpan: 4,
+                ySpan: Math.min(12, Math.max(6, dayDirs.length + 2)),
+            })
+            bit = await ste.hunt(ActChc.OPEN_CHOICE, {
+                dat: { clr0: Color.BLACK, clr1: Color.YELLOW },
+                src: Align.VERTICAL,
+                lst: dayDirs,
+                net: bit.grdBit.dat,
+            })
+            const selectedDay = bit?.chcBit?.src
+
+            await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+
+            if (selectedDay) {
+                const phaseRes = await ste.hunt(ActDrt.PHASE_DIRECTIVE, {
+                    src: selectedDay,
+                })
+                await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+                bit = await ste.hunt(ActMnu.PRINT_MENU, phaseRes)
+            }
+            break
+        }
+
+
+        case ActDat.FLAT_DATA.split(']')[1]: {
+            await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+
+            let parentDir = process.cwd()
+            while (
+                parentDir &&
+                !(
+                    FS.existsSync(path.join(parentDir, 'apps')) &&
+                    FS.existsSync(path.join(parentDir, 'packages')) &&
+                    FS.existsSync(path.join(parentDir, 'package.json'))
+                )
+            ) {
+                const parent = path.dirname(parentDir)
+                if (parent === parentDir) break
+                parentDir = parent
+            }
+
+            const flattenDir = path.join(parentDir, 'data', 'flatten')
+            await FS.ensureDir(flattenDir)
+
+            const entries = FS.readdirSync(flattenDir, { withFileTypes: true })
+            const files = entries
+                .filter((e: any) => e.isFile())
+                .map((e: any) => e.name)
+                .sort((a: string, b: string) => a.localeCompare(b))
+
+            if (files.length === 0) {
+                await ste.hunt(ActCns.UPDATE_CONSOLE, {
+                    idx: 'cns00',
+                    src: '>> [NOTICE] No files found in data/flatten to consolidate.',
+                })
+                break
+            }
+
+            bit = await ste.hunt(ActGrd.UPDATE_GRID, {
+                x: 0,
+                y: 4,
+                xSpan: 4,
+                ySpan: 12,
+            })
+            bit = await ste.hunt(ActChc.OPEN_CHOICE, {
+                dat: { clr0: Color.BLACK, clr1: Color.YELLOW },
+                src: Align.VERTICAL,
+                lst: files,
+                net: bit.grdBit.dat,
+            })
+            const selectedFileName = bit?.chcBit?.src
+
+            await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+
+            if (selectedFileName) {
+                await ste.hunt(ActCns.UPDATE_CONSOLE, {
+                    idx: 'cns00',
+                    src: `>> [FLAT] Consolidating data/flatten into data/flat/${selectedFileName}...`,
+                })
+
+                const flatRes = await ste.hunt(ActDat.FLAT_DATA, {
+                    src: selectedFileName,
+                })
+
+                await ste.hunt(ActTrm.CLEAR_TERMINAL, {})
+                bit = await ste.hunt(ActMnu.PRINT_MENU, flatRes)
+            } else {
+                await ste.hunt(ActCns.UPDATE_CONSOLE, {
+                    idx: 'cns00',
+                    src: '>> [ABORT] File consolidation cancelled.',
+                })
+            }
             break
         }
 

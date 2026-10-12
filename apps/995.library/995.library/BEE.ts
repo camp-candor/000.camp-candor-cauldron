@@ -6,6 +6,7 @@ import ActionUnit from './02.action.unit/action.unit'
 import DataUnit from './03.data.unit/data.unit'
 import ServerUnit from './04.server.unit/server.unit'
 import PackageUnit from './05.package.unit/package.unit'
+import DirectiveUnit from './06.directive.unit/directive.unit'
 import TerminalUnit from './80.terminal.unit/terminal.unit'
 import GridUnit from './81.grid.unit/grid.unit'
 import ConsoleUnit from './83.console.unit/console.unit'
@@ -26,7 +27,9 @@ import { DataModel } from './03.data.unit/data.model'
 import type Server from './04.server.unit/fce/server.interface'
 import { ServerModel } from './04.server.unit/server.model'
 import type Package from './05.package.unit/fce/package.interface'
-import PackageModel from './05.package.unit/package.model'
+import { PackageModel } from './05.package.unit/package.model'
+import type Directive from './06.directive.unit/fce/directive.interface'
+import DirectiveModel from './06.directive.unit/directive.model'
 import type Terminal from './80.terminal.unit/fce/terminal.interface'
 import { TerminalModel } from './80.terminal.unit/terminal.model'
 import type Grid from './81.grid.unit/fce/grid.interface'
@@ -51,6 +54,7 @@ export const list: any[] = [
     DataUnit,
     ServerUnit,
     PackageUnit,
+    DirectiveUnit,
     TerminalUnit,
     GridUnit,
     ConsoleUnit,
@@ -67,6 +71,7 @@ import * as reduceFromAction from './02.action.unit/action.reduce'
 import * as reduceFromData from './03.data.unit/data.reduce'
 import * as reduceFromServer from './04.server.unit/server.reduce'
 import * as reduceFromPackage from './05.package.unit/package.reduce'
+import * as reduceFromDirective from './06.directive.unit/directive.reduce'
 import * as reduceFromTerminal from './80.terminal.unit/terminal.reduce'
 import * as reduceFromGrid from './81.grid.unit/grid.reduce'
 import * as reduceFromConsole from './83.console.unit/console.reduce'
@@ -83,6 +88,7 @@ export const reducer: any = {
     data: reduceFromData.reducer,
     server: reduceFromServer.reducer,
     package: reduceFromPackage.reducer,
+    directive: reduceFromDirective.reducer,
     terminal: reduceFromTerminal.reducer,
     grid: reduceFromGrid.reducer,
     console: reduceFromConsole.reducer,
@@ -100,6 +106,7 @@ export default class UnitData implements Model {
     data: Data = new DataModel()
     server: Server = new ServerModel()
     package: Package = new PackageModel()
+    directive: Directive = new DirectiveModel()
     terminal: Terminal = new TerminalModel()
     grid: Grid = new GridModel()
     console: Console = new ConsoleModel()
