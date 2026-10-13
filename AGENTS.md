@@ -51,7 +51,7 @@ laws:
 - All domain units must maintain a strict 1:1 structural parity with downstream
   repositories.
 - Domain units are organized into discrete workspaces under `packages/<domain>/`
-  (e.g., `packages/000.agent`, `packages/103.factory`).
+  (e.g., `packages/100.agent`, `packages/103.factory`).
 - **Do NOT collapse packages into `apps/995.library/`**. Keeping physical folder
   boundaries isolated ensures that any pivot package or the library itself can
   be copied and pasted directly into any other monorepo across the fleet without
@@ -116,7 +116,7 @@ laws:
 │           └── 98.menu.unit/   # Master terminal navigation loop
 │
 ├── packages/                   # Canonical Storehouse for Fleet Domain Pivots
-│   ├── 000.agent/              # Core Agent Domain & Cockpit (@camp_candor/000.agent)
+│   ├── 100.agent/              # Core Agent Domain & Cockpit (@camp_candor/100.agent)
 │   │   ├── BEE.ts              # Agent unit wiring manifest
 │   │   ├── hunt.ts             # Standardized state machine bootstrap contract
 │   │   ├── package.json        # Contains "terminal" schema metadata
@@ -142,7 +142,7 @@ of Redux coordination manifests without restarting terminal sessions.
 
 1. **Target Directory Resolution:** Resolves `bal.src` dynamically across the
    monorepo root, supporting absolute paths, relative paths, and workspace slugs
-   (e.g., `packages/000.agent` or `[packages/103.factory]`).
+   (e.g., `packages/100.agent` or `[packages/103.factory]`).
 2. **Lexical Unit Sweeping:** Scans the resolved directory strictly for entries
    matching `/^\d{2}\..+\.unit$/`. Discovered units are sorted lexicographically
    (`a.localeCompare(b)`) to guarantee deterministic, bit-reproducible output.
@@ -265,7 +265,7 @@ npm run check:all
 | ---------------------- | ------------------------------------------------------ |
 | `npm run tui`          | Launch Blessed curses cockpit via dynamic `run.ts`     |
 | `npm run test:library` | Run `apps/995.library` AVA test battery                |
-| `npm run test:agent`   | Run `packages/000.agent` Vitest suites                 |
+| `npm run test:agent`   | Run `packages/100.agent` Vitest suites                 |
 | `npm run check:types`  | Project-wide static TypeScript typechecking (`tsc -b`) |
 | `npm run fix`          | Auto-format with Prettier and apply ESLint fixes       |
 

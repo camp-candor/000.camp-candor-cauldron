@@ -7,7 +7,7 @@ import {
     initMenu,
 } from '../98.menu.unit/buz/00.menu.buzz.js'
 
-describe('Local Terminal Cockpit Switchboard (000.agent)', () => {
+describe('Local Terminal Cockpit Switchboard (100.agent)', () => {
     it('initializes with default ONLINE cockpit state', () => {
         const model = new MenuModel()
         expect(model.status).toBe('ONLINE')
