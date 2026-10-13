@@ -4,7 +4,7 @@ import fs from 'fs'
 import path from 'path'
 import { getRepoIdentity, resolveRootPackageJson } from '../src/identity.js'
 
-describe('Verification Gauntlet Invariant Battery (000.agent)', () => {
+describe('Verification Gauntlet Invariant Battery (100.agent)', () => {
     const { rootDir, pkg } = resolveRootPackageJson()
 
     it('asserts root package identity converges to camp-candor-cauldron', () => {
@@ -60,8 +60,8 @@ describe('Verification Gauntlet Invariant Battery (000.agent)', () => {
         expect(fs.existsSync(workerPath)).toBe(false)
     })
 
-    it('asserts zero compiled artifacts (.js, .d.ts) leaked into packages/000.agent source', () => {
-        const agentDir = path.resolve(rootDir, 'packages/000.agent')
+    it('asserts zero compiled artifacts (.js, .d.ts) leaked into packages/100.agent source', () => {
+        const agentDir = path.resolve(rootDir, 'packages/100.agent')
         const scan = (dir: string): string[] => {
             const leaked: string[] = []
             for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
