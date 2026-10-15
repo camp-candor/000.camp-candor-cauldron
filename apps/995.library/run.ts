@@ -267,6 +267,74 @@ const init = async () => {
             }
         }
 
+        // Direct Mount for Cauldron Menu [packages/001.cauldron/98.menu.unit/buz/00.menu.buzz.ts]
+        if (
+            !existingPackages.some(
+                (p) => p.name === '001.cauldron' || p.globalKey === 'CAULDRON',
+            )
+        ) {
+            try {
+                let cauldronDistPath = path.resolve(
+                    import.meta.dirname,
+                    '../../packages/dist/001.cauldron',
+                )
+                if (!fs.existsSync(cauldronDistPath)) {
+                    const localDist = path.resolve(
+                        import.meta.dirname,
+                        '../../packages/001.cauldron/dist',
+                    )
+                    cauldronDistPath = fs.existsSync(localDist)
+                        ? localDist
+                        : path.resolve(
+                              import.meta.dirname,
+                              '../../packages/001.cauldron',
+                          )
+                }
+
+                const huntModulePath = path.join(cauldronDistPath, 'hunt')
+                const MODULE = require(huntModulePath)
+                const instance = MODULE.default || MODULE
+
+                ;(global as any).CAULDRON = instance
+                ;(global as any).PIVOTS['001.cauldron'] = instance
+                ;(global as any).PIVOTS['CAULDRON'] = instance
+
+                const menuActionPath = path.join(
+                    cauldronDistPath,
+                    '98.menu.unit/menu.action',
+                )
+                const MENU_ACTION = require(menuActionPath)
+
+                await LIBRARY.hunt(MENU_ACTION_LIBRARY.ROUTE_MENU, {
+                    idx: 'CAULDRON MENU',
+                    src: 'Open the Cauldron Cockpit menu\nto manage cauldron models.',
+                    fnc: async () => {
+                        await new Promise<void>((resolve) => {
+                            ;(global as any).CAULDRON.hunt(
+                                MENU_ACTION.INIT_MENU,
+                                {
+                                    slv: resolve,
+                                },
+                            )
+                        })
+                        await LIBRARY.hunt(MENU_ACTION_LIBRARY.OPEN_MENU, {
+                            src: '',
+                        })
+                    },
+                })
+
+                await LIBRARY.hunt(CONSOLE_ACTION_LIBRARY.UPDATE_CONSOLE, {
+                    idx: 'cns00',
+                    src: '>> [OK] Mounted UI Pivot: [001.cauldron] -> CAULDRON MENU',
+                })
+            } catch (err: any) {
+                await LIBRARY.hunt(CONSOLE_ACTION_LIBRARY.UPDATE_CONSOLE, {
+                    idx: 'cns00',
+                    src: `:: [WARN] Skipping pivot [001.cauldron]: ${err.message}`,
+                })
+            }
+        }
+
         await LIBRARY.hunt(MENU_ACTION_LIBRARY.OPEN_MENU, { src: '' })
     } catch (err: any) {
         console.error(':: [FAIL] Terminal Runtime Panic:', err)

@@ -4,6 +4,11 @@
     "private": true,
     "type": "module",
     "main": "BEE.ts",
+    "terminal": {
+        "globalKey": "CAULDRON",
+        "menuTitle": "CAULDRON MENU",
+        "menuDesc": "Open the Cauldron Cockpit menu\nto manage cauldron models."
+    },
     "exports": {
         ".": {
             "types": "./BEE.ts",
