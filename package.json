@@ -31,6 +31,7 @@
         "test:agent": "npm run test --workspace=@camp_candor/100.agent",
         "test:library": "npm run test --workspace=@camp_candor/995.library -- --serial",
         "//__ CODE QUALITY & HYGIENE _______________": "",
+        "prepare": "node -e \"try { require('child_process').execSync('git config core.hooksPath .husky/_'); } catch {}\"",
         "fix": "npm run fix:all",
         "fix:all": "npm run prettier:fix && npm run lint:fix",
         "lint:check": "eslint .",
