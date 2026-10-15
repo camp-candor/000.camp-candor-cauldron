@@ -66,6 +66,17 @@ try {
     process.exit(1)
 }
 
+// 3b. Arm Git Hooks (.husky/_)
+try {
+    execSync('git config core.hooksPath .husky/_', { stdio: 'pipe' })
+    console.log(
+        '>> [OK] Git hooks path armed locally (core.hooksPath = .husky/_).',
+    )
+} catch (err) {
+    console.error(':: [FAIL] Failed to configure core.hooksPath:', err.message)
+    process.exit(1)
+}
+
 // 4. Remote Topology Audit and Remapping
 let remotes = ''
 try {
