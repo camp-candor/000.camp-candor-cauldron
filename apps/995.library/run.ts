@@ -267,96 +267,68 @@ const init = async () => {
             }
         }
 
-        // Direct Mount for Cauldron Menu [packages/001.cauldron/98.menu.unit/buz/00.menu.buzz.ts]
-        if (
-            !existingPackages.some(
-                (p) => p.name === '001.cauldron' || p.globalKey === 'CAULDRON',
+        await LIBRARY.hunt(CONSOLE_ACTION_LIBRARY.UPDATE_CONSOLE, {
+            idx: 'cns00',
+            src: '>> [READY] Terminal Cockpit active',
+        })
+        await LIBRARY.hunt(CONSOLE_ACTION_LIBRARY.UPDATE_CONSOLE, {
+            idx: 'cns00',
+            src: ':: [KEYS] UP/DOWN or J/K: Navigate | ENTER: Select',
+        })
+
+        // Direct target dispatch if specified via -t / --separator (excluding default 'library')
+        if (idx && idx.toLowerCase() !== 'library') {
+            const target = existingPackages.find(
+                (p) =>
+                    p.name.toLowerCase() === idx.toLowerCase() ||
+                    p.globalKey.toLowerCase() === idx.toLowerCase() ||
+                    p.menuTitle.toLowerCase() === idx.toLowerCase() ||
+                    p.name.endsWith(`.${idx.toLowerCase()}`) ||
+                    p.name.split('.')[1]?.toLowerCase() === idx.toLowerCase(),
             )
-        ) {
-            try {
-                let cauldronDistPath = path.resolve(
+            if (target) {
+                let pkgDistPath = path.resolve(
                     import.meta.dirname,
-                    '../../packages/dist/001.cauldron',
+                    `../../packages/dist/${target.name}`,
                 )
-                if (!fs.existsSync(cauldronDistPath)) {
+                if (!fs.existsSync(pkgDistPath)) {
                     const localDist = path.resolve(
                         import.meta.dirname,
-                        '../../packages/001.cauldron/dist',
+                        `../../packages/${target.name}/dist`,
                     )
-                    cauldronDistPath = fs.existsSync(localDist)
-                        ? localDist
-                        : path.resolve(
-                              import.meta.dirname,
-                              '../../packages/001.cauldron',
-                          )
+                    if (fs.existsSync(localDist)) {
+                        pkgDistPath = localDist
+                    } else {
+                        pkgDistPath = target.targetDir
+                    }
                 }
-
-                const huntModulePath = path.join(cauldronDistPath, 'hunt')
-                const MODULE = require(huntModulePath)
-                const instance = MODULE.default || MODULE
-
-                ;(global as any).CAULDRON = instance
-                ;(global as any).PIVOTS['001.cauldron'] = instance
-                ;(global as any).PIVOTS['CAULDRON'] = instance
-
                 const menuActionPath = path.join(
-                    cauldronDistPath,
+                    pkgDistPath,
                     '98.menu.unit/menu.action',
                 )
-                const MENU_ACTION = require(menuActionPath)
-
-                await LIBRARY.hunt(MENU_ACTION_LIBRARY.ROUTE_MENU, {
-                    idx: 'CAULDRON MENU',
-                    src: 'Open the Cauldron Cockpit menu\nto manage cauldron models.',
-                    fnc: async () => {
-                        await new Promise<void>((resolve) => {
-                            ;(global as any).CAULDRON.hunt(
-                                MENU_ACTION.INIT_MENU,
-                                {
-                                    slv: resolve,
-                                },
-                            )
-                        })
-                        await LIBRARY.hunt(MENU_ACTION_LIBRARY.OPEN_MENU, {
-                            src: '',
-                        })
-                    },
-                })
-
-                await LIBRARY.hunt(CONSOLE_ACTION_LIBRARY.UPDATE_CONSOLE, {
-                    idx: 'cns00',
-                    src: '>> [OK] Mounted UI Pivot: [001.cauldron] -> CAULDRON MENU',
-                })
-            } catch (err: any) {
-                await LIBRARY.hunt(CONSOLE_ACTION_LIBRARY.UPDATE_CONSOLE, {
-                    idx: 'cns00',
-                    src: `:: [WARN] Skipping pivot [001.cauldron]: ${err.message}`,
-                })
+                if (
+                    fs.existsSync(menuActionPath + '.js') ||
+                    fs.existsSync(menuActionPath + '.ts') ||
+                    fs.existsSync(menuActionPath)
+                ) {
+                    const TARGET_ACTION = require(menuActionPath)
+                    await (global as any)[target.globalKey].hunt(
+                        TARGET_ACTION.INIT_MENU,
+                        {
+                            slv: async () => {
+                                await LIBRARY.hunt(
+                                    MENU_ACTION_LIBRARY.OPEN_MENU,
+                                    { src: '' },
+                                )
+                            },
+                        },
+                    )
+                    return
+                }
             }
         }
 
         await LIBRARY.hunt(MENU_ACTION_LIBRARY.OPEN_MENU, { src: '' })
-
-        if (logWidget && Array.isArray(logWidget.logLines)) {
-            const libPkgPath = path.resolve(
-                import.meta.dirname,
-                './package.json',
-            )
-            const libPkg = fs.existsSync(libPkgPath)
-                ? JSON.parse(fs.readFileSync(libPkgPath, 'utf8'))
-                : { version: '1.0.12' }
-            logWidget.logLines = [
-                '----------------',
-                ${identity.name} ,
-                LIBRARY V,
-                '----------------',
-            ]
-            logWidget.setItems(logWidget.logLines)
-            if (typeof logWidget.scrollTo === 'function') {
-                logWidget.scrollTo(0)
-            }
-            if (logWidget.screen) logWidget.screen.render()
-        }
     } catch (err: any) {
         console.error(':: [FAIL] Terminal Runtime Panic:', err)
         process.exit(1)
@@ -366,16 +338,28 @@ const init = async () => {
 // 4. Main Build & Startup Pipeline
 const main = async () => {
     try {
-        console.log('>> [BUILD] Compiling Monorepo TypeScript References...')
         const existingPackages = getExistingPackages()
+        console.log(
+            `>> [BUILD] Compiling ${existingPackages.length + 1} TypeScript References (tsc -b)...`,
+        )
         const buildTargets = [
             '995.library',
             ...existingPackages.map((p) => `../../packages/${p.name}`),
         ].join(' ')
 
+        const startTime = Date.now()
+        const heartbeat = setInterval(() => {
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(1)
+            console.log(`>> [BUILD] Compiling references... (${elapsed}s elapsed)`)
+        }, 3000)
+
         var { stdout, stderr } = await exec(`tsc -b ${buildTargets}`, {
             cwd: import.meta.dirname,
         })
+        clearInterval(heartbeat)
+
+        const totalElapsed = ((Date.now() - startTime) / 1000).toFixed(1)
+        console.log(`>> [BUILD:OK] All references compiled in ${totalElapsed}s`)
 
         if (stdout) console.log(stdout)
         if (stderr) console.error(stderr)

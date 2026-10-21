@@ -1,5 +1,5 @@
 {
-  "sagaId": "saga-fs-1792076135237_dx57e",
+  "sagaId": "saga-fs-1792172924515_li0hj",
   "sourceDir": "D:\\trellis\\995.library\\apps\\995.library",
   "status": "RUNNING",
   "targetsCompleted": [],
@@ -26,8 +26,16 @@
       "targetDir": "D:\\trellis\\000.series-dashboard\\apps\\995.library",
       "state": "PENDING"
     },
+    "D:\\trellis\\000.series-sower-conductor\\apps\\995.library": {
+      "targetDir": "D:\\trellis\\000.series-sower-conductor\\apps\\995.library",
+      "state": "PENDING"
+    },
     "D:\\trellis\\000.series-sower-engine\\apps\\995.library": {
       "targetDir": "D:\\trellis\\000.series-sower-engine\\apps\\995.library",
+      "state": "PENDING"
+    },
+    "D:\\trellis\\001.goblin-lore\\apps\\995.library": {
+      "targetDir": "D:\\trellis\\001.goblin-lore\\apps\\995.library",
       "state": "PENDING"
     },
     "D:\\trellis\\npm-agent-01\\apps\\995.library": {
@@ -35,6 +43,6 @@
       "state": "PENDING"
     }
   },
-  "createdAt": "2026-10-15T14:55:35.237Z",
-  "updatedAt": "2026-10-15T14:55:35.238Z"
+  "createdAt": "2026-10-16T17:48:44.515Z",
+  "updatedAt": "2026-10-16T17:48:44.517Z"
 }
