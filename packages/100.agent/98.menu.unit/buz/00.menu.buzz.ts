@@ -6,8 +6,35 @@ import State from '../../99.core/state.js'
 import * as Act from '../menu.action.js'
 import { getRepoIdentity } from '../../src/identity.js'
 
-export const initMenu = (cpy: MenuModel, bal: MenuBit, ste: State) => {
+export const initMenu = async (cpy: MenuModel, bal: MenuBit, ste: State) => {
     cpy.status = 'ONLINE'
+    const lib = (globalThis as any).LIBRARY || (global as any).LIBRARY
+    if (lib) {
+        const gridBit = await lib.hunt('[Grid action] Update Grid', {
+            x: 4,
+            y: 0,
+            xSpan: 8,
+            ySpan: 12,
+        })
+        await lib.hunt('[Write action] Write Console', {
+            idx: 'cns00',
+            src: '',
+            dat: { net: gridBit?.grdBit?.dat, src: 'alligator0' },
+        })
+        const identity = getRepoIdentity()
+        await lib.hunt('[Console action] Update Console', {
+            idx: 'cns00',
+            src: '-----------',
+        })
+        await lib.hunt('[Console action] Update Console', {
+            idx: 'cns00',
+            src: identity.titleBanner,
+        })
+        await lib.hunt('[Console action] Update Console', {
+            idx: 'cns00',
+            src: '-----------',
+        })
+    }
     if (bal.slv != null) bal.slv({ mnuBit: { idx: 'init-menu', dat: cpy } })
     return cpy
 }
