@@ -1,8 +1,5 @@
-import Stream from './fce/stream.interface'
-import StreamBit from './fce/stream.interface'
-
-export class StreamModel implements Stream {
-    //idx:string;
-    //streamBitList: StreamBit[] = [];
-    //streamBits: any = {};
+export class StreamModel {
+    idx: string = '12.stream.unit'
+    lastExitCode: number = 0
+    capturedLines: string[] = []
 }

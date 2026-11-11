@@ -1,8 +1,6 @@
-import Config from './fce/config.interface'
-import ConfigBit from './fce/config.interface'
-
-export class ConfigModel implements Config {
-    //idx:string;
-    //configBitList: ConfigBit[] = [];
-    //configBits: any = {};
+export class ConfigModel {
+    idx: string = '03.config.unit'
+    activeDay: string = '002'
+    directiveLedgerPath: string = ''
+    lastStampedSpec: any = null
 }
