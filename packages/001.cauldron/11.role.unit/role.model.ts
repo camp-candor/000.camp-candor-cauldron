@@ -1,8 +1,7 @@
-import Role from './fce/role.interface'
-import RoleBit from './fce/role.interface'
+import { ContributorRoleType } from './fce/role.bit.js'
 
-export class RoleModel implements Role {
-    //idx:string;
-    //roleBitList: RoleBit[] = [];
-    //roleBits: any = {};
+export class RoleModel {
+    idx: string = '11.role.unit'
+    activeRole: ContributorRoleType = 'systems'
+    selectedAt: string = ''
 }
