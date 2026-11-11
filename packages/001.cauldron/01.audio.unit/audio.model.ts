@@ -1,8 +1,7 @@
-import Audio from './fce/audio.interface'
-import AudioBit from './fce/audio.interface'
+import { AudioQuantizationReceipt } from './fce/audio.bit.js'
 
-export class AudioModel implements Audio {
-    //idx:string;
-    //audioBitList: AudioBit[] = [];
-    //audioBits: any = {};
+export class AudioModel {
+    idx: string = '01.audio.unit'
+    lastQuantization: AudioQuantizationReceipt | null = null
+    history: AudioQuantizationReceipt[] = []
 }
