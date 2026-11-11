@@ -1,8 +1,8 @@
-import Versions from './fce/versions.interface'
-import VersionsBit from './fce/versions.interface'
+import { VersionsManifestPayload } from './fce/versions.bit.js'
 
-export class VersionsModel implements Versions {
-    //idx:string;
-    //versionsBitList: VersionsBit[] = [];
-    //versionsBits: any = {};
+export class VersionsModel {
+    idx: string = '14.versions.unit'
+    manifestPath: string = ''
+    cachedManifest: VersionsManifestPayload | null = null
+    loadedAt: string = ''
 }
