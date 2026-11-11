@@ -164,6 +164,24 @@ const init = async () => {
             if (logWidget.screen) logWidget.screen.render()
         }
 
+        // Graceful operator termination: q / Escape restore the terminal
+        // buffer, destroy the curses screen, and exit with code 0.
+        const exitScreen = cnsBit?.cnsBit?.dat?.bit?.screen
+        if (exitScreen && typeof exitScreen.key === 'function') {
+            const gracefulExit = () => {
+                try {
+                    if (typeof exitScreen.leave === 'function') {
+                        exitScreen.leave()
+                    }
+                    exitScreen.destroy()
+                } catch {
+                    // Fail-closed teardown guard during exit
+                }
+                process.exit(0)
+            }
+            exitScreen.key(['q', 'escape'], gracefulExit)
+        }
+
         const MENU_ACTION_LIBRARY = require(
             path.join(libPath, '98.menu.unit/menu.action'),
         )

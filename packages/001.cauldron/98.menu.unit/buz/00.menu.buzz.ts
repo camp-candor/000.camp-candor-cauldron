@@ -2,6 +2,7 @@
 import * as ActMnu from '../menu.action.js'
 //import * as ActAgt from '../../00.agent.unit/agent.action.js';
 import * as ActOlm from '../../00.cauldron.unit/cauldron.action.js'
+import * as ActStr from '../../12.stream.unit/stream.action.js'
 
 import type { MenuModel } from '../menu.model.js'
 import type MenuBit from '../fce/menu.bit.js'
@@ -65,6 +66,7 @@ export const updateMenu = async (cpy: MenuModel, bal: MenuBit, ste: State) => {
         ActOlm.UPDATE_CAULDRON.split(']')[1],
         ActOlm.TEST_CAULDRON.split(']')[1],
         ActOlm.LIST_CAULDRON.split(']')[1],
+        'STREAM TEST',
         'ROOT MENU',
     ]
 
@@ -121,6 +123,23 @@ export const updateMenu = async (cpy: MenuModel, bal: MenuBit, ste: State) => {
             }
 
             await new Promise((resolve) => setTimeout(resolve, 3000))
+            break
+
+        case 'STREAM TEST':
+            bit = await ste.hunt(ActStr.UPDATE_STREAM, {
+                dat: {
+                    command: 'node',
+                    args: [
+                        '-e',
+                        'console.log("STREAM_LINE_ALPHA"); console.log("STREAM_LINE_BRAVO"); console.log("STREAM_LINE_CHARLIE")',
+                    ],
+                    prefix: 'STREAM',
+                },
+            })
+            bit = await global.LIBRARY.hunt(UPDATE_CONSOLE, {
+                idx: 'cns00',
+                src: `>> [STREAM] Process exited with code ${bit?.stmBit?.val}`,
+            })
             break
 
         case 'ROOT MENU':
