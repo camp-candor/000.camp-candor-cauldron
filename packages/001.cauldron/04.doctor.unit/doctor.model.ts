@@ -1,8 +1,8 @@
-import Doctor from './fce/doctor.interface'
-import DoctorBit from './fce/doctor.interface'
+import { DiagnosticReportItem } from './fce/doctor.bit.js'
 
-export class DoctorModel implements Doctor {
-    //idx:string;
-    //doctorBitList: DoctorBit[] = [];
-    //doctorBits: any = {};
+export class DoctorModel {
+    idx: string = '04.doctor.unit'
+    lastRunPassed: boolean = false
+    reports: DiagnosticReportItem[] = []
+    evaluatedAt: string = ''
 }
