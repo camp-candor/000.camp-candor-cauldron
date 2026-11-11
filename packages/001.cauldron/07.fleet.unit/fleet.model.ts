@@ -1,8 +1,7 @@
-import Fleet from './fce/fleet.interface'
-import FleetBit from './fce/fleet.interface'
-
-export class FleetModel implements Fleet {
-    //idx:string;
-    //fleetBitList: FleetBit[] = [];
-    //fleetBits: any = {};
+export class FleetModel {
+    idx: string = '07.fleet.unit'
+    lastHydratedRole: string = ''
+    hydratedRepos: string[] = []
+    tombstonedClusters: string[] = []
+    status: 'IDLE' | 'HYDRATING' | 'COMPLETE' | 'FAILED' = 'IDLE'
 }

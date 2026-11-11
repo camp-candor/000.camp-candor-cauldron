@@ -1,8 +1,8 @@
-import Drift from './fce/drift.interface'
-import DriftBit from './fce/drift.interface'
+import { RepoDriftRecord } from './fce/drift.bit.js'
 
-export class DriftModel implements Drift {
-    //idx:string;
-    //driftBitList: DriftBit[] = [];
-    //driftBits: any = {};
+export class DriftModel {
+    idx: string = '05.drift.unit'
+    lastEvaluatedAt: string = ''
+    records: RepoDriftRecord[] = []
+    hasDrift: boolean = false
 }
