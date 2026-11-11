@@ -1,8 +1,8 @@
-import Integration from './fce/integration.interface'
-import IntegrationBit from './fce/integration.interface'
+import { SubsystemValidationResult } from './fce/integration.bit.js'
 
-export class IntegrationModel implements Integration {
-    //idx:string;
-    //integrationBitList: IntegrationBit[] = [];
-    //integrationBits: any = {};
+export class IntegrationModel {
+    idx: string = '09.integration.unit'
+    allPassed: boolean = false
+    results: SubsystemValidationResult | null = null
+    executedAt: string = ''
 }
