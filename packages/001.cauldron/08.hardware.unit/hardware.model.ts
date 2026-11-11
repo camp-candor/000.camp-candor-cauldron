@@ -1,8 +1,7 @@
-import Hardware from './fce/hardware.interface'
-import HardwareBit from './fce/hardware.interface'
+import { RigIdentityType } from './fce/hardware.bit.js'
 
-export class HardwareModel implements Hardware {
-    //idx:string;
-    //hardwareBitList: HardwareBit[] = [];
-    //hardwareBits: any = {};
+export class HardwareModel {
+    idx: string = '08.hardware.unit'
+    selectedRig: RigIdentityType = 'RIG_1_CONDUCTOR'
+    configuredAt: string = ''
 }
