@@ -1,8 +1,7 @@
-import Compilation from './fce/compilation.interface'
-import CompilationBit from './fce/compilation.interface'
+import { MockCompilationSummary } from './fce/compilation.bit.js'
 
-export class CompilationModel implements Compilation {
-    //idx:string;
-    //compilationBitList: CompilationBit[] = [];
-    //compilationBits: any = {};
+export class CompilationModel {
+    idx: string = '02.compilation.unit'
+    lastRunSummary: MockCompilationSummary | null = null
+    isBusy: boolean = false
 }
