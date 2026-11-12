@@ -23,6 +23,7 @@ coverage
 
 # Build & TypeScript caches
 dist
+.wrangler/
 *.tsbuildinfo
 .eslintcache
 

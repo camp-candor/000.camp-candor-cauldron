@@ -18,7 +18,6 @@ jobs:
     deploy:
         runs-on: ubuntu-latest
         name: Deploy Edge Control Plane
-        if: hashFiles('apps/worker/**') != ''
         steps:
             - uses: actions/checkout@v4
 
