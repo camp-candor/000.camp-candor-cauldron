@@ -16,6 +16,9 @@ export function reducer(
         case Act.INIT_DOCTOR:
             return Buzz.initDoctor(clone(model), act.bale, state)
 
+        case Act.RUN_DOCTOR:
+            return Buzz.runDoctor(clone(model), act.bale, state)
+
         default:
             return model
     }

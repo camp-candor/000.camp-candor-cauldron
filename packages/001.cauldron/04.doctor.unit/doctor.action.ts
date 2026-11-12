@@ -15,4 +15,10 @@ export class UpdateDoctor implements Action {
     constructor(public bale: DoctorBit) {}
 }
 
-export type Actions = InitDoctor | UpdateDoctor
+export const RUN_DOCTOR = '[Doctor action] Run Doctor'
+export class RunDoctor implements Action {
+    readonly type = RUN_DOCTOR
+    constructor(public bale: DoctorBit) {}
+}
+
+export type Actions = InitDoctor | UpdateDoctor | RunDoctor

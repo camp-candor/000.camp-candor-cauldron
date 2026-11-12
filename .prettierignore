@@ -18,6 +18,8 @@ apps/995.library/
 
 # Runtime Data & Telemetry Logs
 data/
+cauldron.config.json
+cauldron.config.json.tmp
 
 # Un-migrated Legacy Workspaces (Quarantined until respective epics)
 packages/133.cloudflare/

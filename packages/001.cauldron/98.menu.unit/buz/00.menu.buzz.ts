@@ -3,6 +3,12 @@ import * as ActMnu from '../menu.action.js'
 //import * as ActAgt from '../../00.agent.unit/agent.action.js';
 import * as ActOlm from '../../00.cauldron.unit/cauldron.action.js'
 import * as ActStr from '../../12.stream.unit/stream.action.js'
+import * as ActDoc from '../../04.doctor.unit/doctor.action.js'
+
+import { selectHardwareProfile } from '../../08.hardware.unit/buz/selectHardware.buzz.js'
+import { HardwareModel } from '../../08.hardware.unit/hardware.model.js'
+import { stampHardwareConfiguration } from '../../03.config.unit/buz/stampConfig.buzz.js'
+import { ConfigModel } from '../../03.config.unit/config.model.js'
 
 import type { MenuModel } from '../menu.model.js'
 import type MenuBit from '../fce/menu.bit.js'
@@ -63,6 +69,8 @@ export const initMenu = async (cpy: MenuModel, bal: MenuBit, ste: State) => {
 
 export const updateMenu = async (cpy: MenuModel, bal: MenuBit, ste: State) => {
     lst = [
+        'CONFIGURE HARDWARE RIG',
+        'RUN CAULDRON DOCTOR',
         ActOlm.UPDATE_CAULDRON.split(']')[1],
         ActOlm.TEST_CAULDRON.split(']')[1],
         ActOlm.LIST_CAULDRON.split(']')[1],
@@ -86,6 +94,51 @@ export const updateMenu = async (cpy: MenuModel, bal: MenuBit, ste: State) => {
     src = bit.chcBit.src
 
     switch (src) {
+        case 'CONFIGURE HARDWARE RIG': {
+            try {
+                const hrdCpy = new HardwareModel()
+                const cfgCpy = new ConfigModel()
+
+                // Interactive path: no src bale opens the choice-hardware modal
+                // through the master library bus, then resolves the operator pick.
+                await selectHardwareProfile(
+                    hrdCpy,
+                    { idx: 'configure-hardware-rig' } as any,
+                    ste,
+                )
+
+                const stampedRig = hrdCpy.selectedRig
+
+                // Atomic POSIX serialization: .tmp staging then renameSync swap
+                await stampHardwareConfiguration(
+                    cfgCpy,
+                    { idx: 'stamp-hardware-config', src: stampedRig } as any,
+                    ste,
+                )
+            } catch (e: any) {
+                bit = await global.LIBRARY.hunt(UPDATE_CONSOLE, {
+                    idx: 'cns00',
+                    src:
+                        '>> [RE-WIRE ERROR] Hardware config faulted: ' +
+                        (e && e.message ? e.message : String(e)),
+                })
+            }
+            break
+        }
+
+        case 'RUN CAULDRON DOCTOR':
+            try {
+                bit = await ste.hunt(ActDoc.RUN_DOCTOR, {})
+            } catch (e: any) {
+                bit = await global.LIBRARY.hunt(UPDATE_CONSOLE, {
+                    idx: 'cns00',
+                    src:
+                        '>> [RE-WIRE ERROR] Cauldron doctor faulted: ' +
+                        (e && e.message ? e.message : String(e)),
+                })
+            }
+            break
+
         case ActOlm.UPDATE_CAULDRON.split(']')[1]:
             bit = await ste.hunt(ActOlm.UPDATE_CAULDRON, {
                 content: 'Cauldron Menu Selected',

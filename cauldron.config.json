@@ -1,0 +1,7 @@
+{
+  "rig_identity": "RIG_1_CONDUCTOR",
+  "audio_port": 8000,
+  "gpu_acceleration": false,
+  "max_memory_concurrency": 1,
+  "updated_at": "2026-11-12T00:53:26.253Z"
+}

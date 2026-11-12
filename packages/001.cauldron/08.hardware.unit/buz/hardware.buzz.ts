@@ -3,7 +3,6 @@ export const initHardware = (
     bal: HardwareBit,
     ste: State,
 ) => {
-    debugger
     return cpy
 }
 

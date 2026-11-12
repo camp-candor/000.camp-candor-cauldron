@@ -1,9 +1,14 @@
 export const initDoctor = (cpy: DoctorModel, bal: DoctorBit, ste: State) => {
-    debugger
+    if (bal && bal.slv != null) {
+        bal.slv({ docBit: { idx: 'init-doctor' } })
+    }
     return cpy
 }
 
 export const updateDoctor = (cpy: DoctorModel, bal: DoctorBit, ste: State) => {
+    if (bal && bal.slv != null) {
+        bal.slv({ docBit: { idx: 'update-doctor' } })
+    }
     return cpy
 }
 
