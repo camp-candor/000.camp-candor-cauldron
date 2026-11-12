@@ -85,9 +85,11 @@ describe('Phase 4: Astro Cloudflare Edge Runtime Perimeter Defense Gauntlet', ()
         expect(content).toContain('X-Perimeter-Guard')
     })
 
-    it('asserts node standalone adapter in astro.config.mjs', () => {
+    it('asserts Cloudflare edge adapter in astro.config.mjs', () => {
         const content = fs.readFileSync(configPath, 'utf8')
-        expect(content).toContain("import node from '@astrojs/node'")
-        expect(content).toContain('adapter: node({')
+        expect(content).toContain(
+            "import cloudflare from '@astrojs/cloudflare'",
+        )
+        expect(content).toContain('adapter: cloudflare({')
     })
 })

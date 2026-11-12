@@ -68,7 +68,6 @@
         "@types/rx-lite": "4.0.10",
         "@types/string": "0.0.34",
         "@vitest/ui": "3.2.4",
-        "astro": "7.4.1",
         "clone-deep": "4.0.1",
         "commander": "^13.1.0",
         "dotenv": "^16.6.1",
@@ -88,7 +87,6 @@
         "zod": "^3.25.76"
     },
     "dependencies": {
-        "@astrojs/node": "11.1.12",
         "lodash": "4.18.1"
     }
 }
