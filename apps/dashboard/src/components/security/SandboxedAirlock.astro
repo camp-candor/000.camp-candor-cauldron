@@ -1,0 +1,140 @@
+---
+/**
+ * apps/dashboard/src/components/security/SandboxedAirlock.astro
+ *
+ * Diegetic Container Airlock Enclosure.
+ * Mounts full-viewport iframe within strict sandboxing boundaries,
+ * eliminates clickjacking via CSP frame-ancestors, and blocks top-navigation.
+ * Pure 7-bit clean ASCII compliance strictly enforced.
+ */
+import { compileIframeSandboxPolicy } from '../../lib/security/sandboxGuard';
+
+interface Props {
+  readonly spaUrl: string;
+  readonly fallbackUrl?: string;
+  readonly title?: string;
+  readonly allowForms?: boolean;
+}
+
+const {
+  spaUrl,
+  fallbackUrl = 'https://002-primal-mama-mobile-control.pages.dev/',
+  title = 'Directorial Workspace Sandbox Airlock',
+  allowForms = true,
+} = Astro.props;
+
+// Compile strict sandbox and allow directives
+const { sandbox, allow } = compileIframeSandboxPolicy({
+  allowForms,
+  allowDownloads: true,
+  allowModals: false,
+});
+---
+
+<div class="stage-viewport-container select-none bg-black">
+  <iframe
+    id="flight-deck"
+    class="stage-frame-locked"
+    sandbox={sandbox}
+    allow={allow}
+    title={title}
+    data-iframe-url={spaUrl}
+    data-fallback-url={fallbackUrl}
+  ></iframe>
+</div>
+
+<style>
+  .stage-viewport-container {
+    position: absolute;
+    top: 48px;
+    bottom: 32px;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    height: calc(100dvh - 80px);
+    overflow: hidden;
+  }
+  .stage-frame-locked {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+</style>
+
+<script>
+  import { $clerkStore } from '@clerk/astro/client';
+  import { validateRouteChangedEnvelope, mirrorRouteToHostHistory } from '../../lib/routing/deepLinkBridge';
+
+  const iframe = document.getElementById('flight-deck') as HTMLIFrameElement | null;
+  const defaultFallback = 'https://002-primal-mama-mobile-control.pages.dev/';
+
+  let targetUrl = defaultFallback;
+  if (iframe && iframe.dataset.iframeUrl && iframe.dataset.iframeUrl !== 'none') {
+    targetUrl = iframe.dataset.iframeUrl;
+  } else if (iframe && iframe.dataset.fallbackUrl) {
+    targetUrl = iframe.dataset.fallbackUrl;
+  }
+
+  let retryAttempts = 0;
+  const MAX_RETRIES = 30;
+
+  const bootstrapAirlockFrame = async () => {
+    const clerk = ($clerkStore as any)?.get();
+
+    if (!clerk || !clerk.loaded) {
+      retryAttempts++;
+      if (retryAttempts < MAX_RETRIES) {
+        setTimeout(bootstrapAirlockFrame, 100);
+        return;
+      }
+      console.warn('>> [AIRLOCK][WARN] Clerk handshake timed out. Loading unauthenticated frame.');
+    }
+
+    let sessionToken: string | null = null;
+    try {
+      if (clerk && clerk.session) {
+        sessionToken = await clerk.session.getToken();
+        console.log('>> [AIRLOCK][OK] Edge session token acquired for airlock mounting.');
+      }
+    } catch (err: unknown) {
+      console.error('>> [AIRLOCK][FAIL] Error extracting Clerk session token:', err);
+    }
+
+    let finalSrc = targetUrl;
+    if (sessionToken) {
+      const separator = finalSrc.indexOf('?') === -1 ? '?' : '&';
+      finalSrc += `${separator}token=${encodeURIComponent(sessionToken)}`;
+    }
+
+    if (iframe) {
+      iframe.src = finalSrc;
+
+      if (sessionToken) {
+        iframe.onload = () => {
+          if (iframe.contentWindow) {
+            console.log('>> [AIRLOCK][IPC] Emitting CLERK_AUTH_TOKEN envelope to sandboxed frame.');
+            iframe.contentWindow.postMessage(
+              {
+                type: 'CLERK_AUTH_TOKEN',
+                payload: { token: sessionToken },
+              },
+              '*'
+            );
+          }
+        };
+      }
+    }
+  };
+
+  // Ingest child routing events securely
+  window.addEventListener('message', (event: MessageEvent) => {
+    const envelope = validateRouteChangedEnvelope(event.data);
+    if (envelope) {
+      console.log(`>> [AIRLOCK][ROUTER] Synchronizing history: ${envelope.payload.path}`);
+      mirrorRouteToHostHistory(envelope.payload.path, envelope.payload.query);
+    }
+  });
+
+  bootstrapAirlockFrame();
+</script>

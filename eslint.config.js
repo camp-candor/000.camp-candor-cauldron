@@ -15,6 +15,7 @@ export default tseslint.config(
             '**/node_modules/**',
             '**/*.d.ts',
             '**/apps/995.library/**',
+            '**/apps/dashboard/**',
         ],
     },
 

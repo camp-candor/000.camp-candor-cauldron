@@ -1,0 +1,105 @@
+---
+/**
+ * apps/dashboard/src/components/genesis/GenesisBriefingCard.astro
+ *
+ * Primordial Genesis Universe Invariant Briefing Card.
+ * Pure server-side Astro component (Zero Client JS / 0 KB Bundle Overhead).
+ * Displays cold-start state constraints ($T_0 = $0.00) and sovereign tuple requirements.
+ * Pure 7-bit clean ASCII compliance strictly enforced.
+ */
+
+interface Props {
+  readonly seriesSlug?: string;
+  readonly merkleRootHash?: string;
+  readonly clusterIdentity?: string;
+}
+
+const {
+  seriesSlug = '[UNBOUND]',
+  merkleRootHash = '0000000000000000000000000000000000000000000000000000000000000000',
+  clusterIdentity = '05.DELIVERY // AXIS B'
+} = Astro.props;
+---
+
+<div class="w-full max-w-4xl mx-auto border border-[#2a2e39] bg-[#11141c] text-[#d1d5db] font-mono p-6 sm:p-8 rounded shadow-2xl space-y-6">
+  <!-- HEADER BLOCK -->
+  <div class="border-b border-[#2a2e39] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+    <div>
+      <div class="text-[10px] tracking-widest text-[#7e8494] uppercase">:: PRIMORDIAL GENESIS AIRLOCK</div>
+      <h2 class="text-lg font-bold text-white tracking-wide mt-0.5">COLD-START BYTE-0 VOID DECK</h2>
+    </div>
+    <div class="flex items-center space-x-2">
+      <span class="inline-block w-2.5 h-2.5 rounded-full bg-[#ef4444] animate-pulse"></span>
+      <span class="text-xs font-bold text-[#ef4444] tracking-wider uppercase">[ DISPATCH LOCKOUT ENGAGED ]</span>
+    </div>
+  </div>
+
+  <!-- AXIOMATIC INVARIANTS GRID -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+    <div class="border border-[#2a2e39] bg-[#0c0e14] p-3 rounded space-y-1">
+      <span class="text-[10px] text-[#7e8494] uppercase tracking-wider">Economic Baseline</span>
+      <p class="text-sm font-bold text-[#00fc40]">T0 = $0.00 / SEC</p>
+      <span class="text-[10px] text-[#9ca3af]">Compute Firewall Active</span>
+    </div>
+
+    <div class="border border-[#2a2e39] bg-[#0c0e14] p-3 rounded space-y-1">
+      <span class="text-[10px] text-[#7e8494] uppercase tracking-wider">Franchise Scope</span>
+      <p class="text-sm font-bold text-[#fbbf24]">{seriesSlug}</p>
+      <span class="text-[10px] text-[#9ca3af]">Unseeded Universe State</span>
+    </div>
+
+    <div class="border border-[#2a2e39] bg-[#0c0e14] p-3 rounded space-y-1">
+      <span class="text-[10px] text-[#7e8494] uppercase tracking-wider">Cluster Discipline</span>
+      <p class="text-sm font-bold text-white">{clusterIdentity}</p>
+      <span class="text-[10px] text-[#9ca3af]">Observation &amp; Staging</span>
+    </div>
+  </div>
+
+  <!-- MERKLE DIGEST PANEL -->
+  <div class="border border-[#2a2e39] bg-[#0c0e14] p-4 rounded space-y-2">
+    <div class="flex items-center justify-between text-xs">
+      <span class="text-[10px] text-[#7e8494] uppercase tracking-wider">Sovereign Merkle Canon Seal (H_root)</span>
+      <span class="text-[10px] text-[#ef4444] font-bold">[UNSEALED]</span>
+    </div>
+    <div class="text-xs break-all font-mono text-[#9ca3af] bg-[#161922] p-2 border border-[#2a2e39] rounded">
+      {merkleRootHash}
+    </div>
+    <p class="text-[11px] text-[#7e8494] leading-relaxed">
+      Notice: Upstream generative pipelines, Remotion preview engines, and speech synthesis workers remain locked until an immutable Merkle root is sealed to disk.
+    </p>
+  </div>
+
+  <!-- CONSTITUTIONAL TUPLE DIRECTIVES -->
+  <div class="space-y-3">
+    <h3 class="text-xs font-bold text-white uppercase tracking-wider">Mandatory Constitutional Tuple Requirements</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+      <div class="p-3 border border-[#2a2e39] bg-[#161922] rounded space-y-1">
+        <span class="font-bold text-[#38bdf8]">>> State Space (S)</span>
+        <p class="text-[11px] text-[#9ca3af]">Integer basis-point bounds (0 to 10,000 bps) for scarcity, trauma, and mass tiers.</p>
+      </div>
+      <div class="p-3 border border-[#2a2e39] bg-[#161922] rounded space-y-1">
+        <span class="font-bold text-[#38bdf8]">>> Action Vocabulary (A)</span>
+        <p class="text-[11px] text-[#9ca3af]">Closed kinetic verb arrays and discrete biological locomotion baseline classes.</p>
+      </div>
+      <div class="p-3 border border-[#2a2e39] bg-[#161922] rounded space-y-1">
+        <span class="font-bold text-[#38bdf8]">>> Invariant Laws (I)</span>
+        <p class="text-[11px] text-[#9ca3af]">Max farce ratio ceiling (&lt;= 15%), min escalation depth (&gt;= 2), and -14 dB VO ducking.</p>
+      </div>
+      <div class="p-3 border border-[#2a2e39] bg-[#161922] rounded space-y-1">
+        <span class="font-bold text-[#38bdf8]">>> Medium Projections (Rm)</span>
+        <p class="text-[11px] text-[#9ca3af]">Deterministic bindings for local speech synthesis, diffusion nodes, and LoRA triggers.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTION CONTROL FOOTER -->
+  <div class="border-t border-[#2a2e39] pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+    <span class="text-[#7e8494]">AWAITING OPERATOR INPUT :: T_0 CEILING ENFORCED</span>
+    <a
+      href="#initialize"
+      class="w-full sm:w-auto text-center bg-[#1f2430] hover:bg-[#2a3142] text-[#00fc40] border border-[#00fc40] py-2 px-6 text-xs uppercase tracking-wider font-bold transition-colors"
+    >
+      [ + INITIALIZE FIRST SERIES >> ]
+    </a>
+  </div>
+</div>

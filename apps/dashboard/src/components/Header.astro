@@ -1,0 +1,97 @@
+---
+const auth =
+  typeof Astro.locals.auth === 'function' ? Astro.locals.auth() : null;
+const isServerLoggedIn = Boolean(auth && (auth.userId || auth.authenticated));
+---
+
+<header
+  class="fixed top-0 left-0 right-0 flex items-center justify-between border-b border-primary dark:border-paper/20 bg-paper/90 backdrop-blur-sm dark:bg-background-dark/90 px-4 py-3 z-50 transition-transform duration-300"
+  id="main-header"
+>
+  <div class="flex items-center gap-2">
+    <span class="material-symbols-outlined text-2xl">castle</span>
+    <h1 class="text-xl font-black uppercase tracking-tighter italic">
+      alligator.ink
+    </h1>
+    <button
+      class="bg-[#1b3d22] text-paper px-4 py-1.5 text-xs font-bold uppercase border border-[#1b3d22] dark:border-paper/40 ml-4 cursor-pointer"
+      >[what is done]</button
+    >
+  </div>
+  <div class="flex items-center gap-2">
+    <a
+      href="/login"
+      id="header-enter-btn"
+      class="bg-primary text-paper px-4 py-1.5 text-xs font-bold uppercase border border-primary dark:border-paper/40"
+    >
+      Enter
+    </a>
+    <button
+      id="header-logout-btn"
+      type="button"
+      class={`bg-primary text-paper px-4 py-1.5 text-xs font-bold uppercase border border-primary dark:border-paper/40 hover:bg-red-900 hover:border-red-900 transition-colors cursor-pointer ${
+        isServerLoggedIn ? '' : 'hidden'
+      }`}
+    >
+      [logout]
+    </button>
+  </div>
+</header>
+
+<script>
+  import { $clerkStore } from '@clerk/astro/client';
+
+  let lastScrollY = window.scrollY;
+  const header = document.getElementById('main-header');
+  window.addEventListener('scroll', () => {
+    if (header) {
+      if (window.scrollY > lastScrollY && window.scrollY > 100) {
+        header.classList.add('hide-header');
+      } else {
+        header.classList.remove('hide-header');
+      }
+    }
+    lastScrollY = window.scrollY;
+  });
+
+  const logoutBtn = document.getElementById('header-logout-btn');
+
+  const updateAuthUI = (clerk: any) => {
+    const isLoggedIn = Boolean(
+      clerk &&
+        (clerk.user ||
+          clerk.session ||
+          (clerk.client?.sessions && clerk.client.sessions.length > 0))
+    );
+    if (logoutBtn) {
+      if (isLoggedIn) {
+        logoutBtn.classList.remove('hidden');
+      } else {
+        logoutBtn.classList.add('hidden');
+      }
+    }
+  };
+
+  updateAuthUI($clerkStore.get());
+
+  $clerkStore.subscribe((clerk) => {
+    updateAuthUI(clerk);
+  });
+
+  logoutBtn?.addEventListener('click', async () => {
+    try {
+      const clerk = $clerkStore.get();
+      if (clerk) {
+        if (typeof clerk.signOut === 'function') {
+          await clerk.signOut();
+        } else if (clerk.client && typeof clerk.client.signOut === 'function') {
+          await clerk.client.signOut();
+        }
+      }
+    } catch (err) {
+      console.error('LOGOUT_ERROR', err);
+    } finally {
+      window.location.href = '/';
+    }
+  });
+</script>

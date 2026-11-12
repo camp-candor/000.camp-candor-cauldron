@@ -1,0 +1,62 @@
+---
+const threats = [
+  {
+    name: 'The Void-Stalker',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuCvx2L0ZG5UxZUZEDPrWa1oZqjGenM6AP3BvnnIZVfu7OoRiAX07CUdKyrUaKRuw60ohtz0SUD_GQAjK5iFHnRzBYjBwO3V1QkiJ7MAVVw1_7jybckHghEfAwb1eyvnmYZ570z2OdKgtqyPDoEgqXFUC00Cdpt66bVa6OBzIFk8WmO8KLtz1ZAqKcSBS48baYLzFCrdt_jg7LLJ9zieV8aft81UditS__Mea25X1m7XDJPz3dMiIKvXTnl-GYB9bb8p3wUKwkBSpMI-',
+    location: 'LAST SIGHTED: Shadow Fen, Level 42',
+    warning: '[ENGAGE WITH CAUTION]',
+  },
+  {
+    name: 'Relic Guardian',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuChBYTlZdGo61-AhjJnT6ly9K2U4f-kXGFlCww4Z0SnwDK1l8syUyg2JP3FqA8xJAg75vO_TBBGVkO9NPE2AYFMw3mWhuWbStzvmluW7qXgjc90zjh5HLWypm6-Ka_IzKXVVsid6kDaXSvQoMiLhHhk3i2Lg6ATRE1csI7CxSKvWywA24LUs3k-eizsMh_Rz9mTFsYQJpt4ffZSD0CbSRCV1aWy7wVakyIlglm4uHMMlRPceAHDPSJWoHzi4LXp6tL9KT4BbTCQqPyK',
+    location: 'LAST SIGHTED: Elder Peak, Level 55',
+    warning: '[RELIC THREAT: HIGH]',
+  },
+  {
+    name: 'Aether Wraith',
+    image:
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuAWBlMgIK3k2kbXag3zh-X_tXnVMohCOj9PQ6flanEL3cRsPSwEl2bIEGKDAY0tBAlp9tgfoI6mVlY_g0sPU62TR2hix3bCmbPqzpKxVmgnJwIs3kouYnVWFqwLtlbYD66X_KF0WwSJBJsJg93VDDCuROQB-tKYkOOT4dDluL5W66ennSnOT24e1eLmku5xP0r7p15YoZkJ0qDq0UzPNFJHBEPbHZttQ2wHEHSR5KvTGNLnJ9FW8RAlJhBLl1D7eOH4wgAkg36pIw3t',
+    location: 'LAST SIGHTED: All Realms, Unranked',
+    warning: '[OMNIPRESENT ANOMALY]',
+  },
+];
+---
+
+<section class="px-6 py-20 space-y-12">
+  <div class="flex items-center gap-4">
+    <div class="h-[1px] bg-primary dark:bg-paper/20 flex-grow"></div>
+    <h3
+      class="text-xl font-black uppercase tracking-tight flex items-center gap-2"
+    >
+      <span class="material-symbols-outlined text-xl">skull</span> Life Log
+    </h3>
+    <div class="h-[1px] bg-primary dark:bg-paper/20 flex-grow"></div>
+  </div>
+  <div class="grid grid-cols-1 gap-12">
+    {
+      threats.map((threat) => (
+        <a
+          href="/guest/viewer"
+          class="block cursor-pointer group quest-border bg-paper dark:bg-zinc-900 dark:border-paper/20 p-4"
+        >
+          <img
+            alt={threat.name}
+            class="w-full h-72 object-cover stipple-effect grayscale mb-4 border border-primary"
+            src={threat.image}
+          />
+          <div class="space-y-1">
+            <h4 class="font-black uppercase text-lg border-b border-primary dark:border-paper/20 pb-1">
+              {threat.name}
+            </h4>
+            <p class="text-xs italic font-serif">{threat.location}</p>
+            <p class="text-[10px] font-mono text-red-700 font-bold uppercase mt-2">
+              {threat.warning}
+            </p>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</section>
