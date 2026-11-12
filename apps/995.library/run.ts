@@ -26,6 +26,15 @@ export interface PackageTerminalMetadata {
 /**
  * Sweeps packages/ for valid TypeScript packages and extracts Schema-Driven metadata.
  */
+export const registerCauldronFlightDeck = () => {
+    return {
+        packageKey: '001.cauldron',
+        displayName: 'Camp Candor Cauldron Flight Deck',
+        entryUnit: '98.menu.unit',
+        relativeDir: path.join('packages', '001.cauldron'),
+    }
+}
+
 export const getExistingPackages = (): PackageTerminalMetadata[] => {
     const packagesDir = path.resolve(import.meta.dirname, '../../packages')
     if (!fs.existsSync(packagesDir)) return []

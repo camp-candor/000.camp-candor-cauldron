@@ -1,8 +1,5 @@
-import Remotion from './fce/remotion.interface'
-import RemotionBit from './fce/remotion.interface'
-
-export class RemotionModel implements Remotion {
-    //idx:string;
-    //remotionBitList: RemotionBit[] = [];
-    //remotionBits: any = {};
+export class RemotionModel {
+    idx: string = '10.remotion.unit'
+    rootVerified: boolean = false
+    compositionPath: string = ''
 }

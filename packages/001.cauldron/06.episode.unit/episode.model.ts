@@ -1,8 +1,8 @@
-import Episode from './fce/episode.interface'
-import EpisodeBit from './fce/episode.interface'
+import { DialogueAstPayload } from './fce/episode.bit.js'
 
-export class EpisodeModel implements Episode {
-    //idx:string;
-    //episodeBitList: EpisodeBit[] = [];
-    //episodeBits: any = {};
+export class EpisodeModel {
+    idx: string = '06.episode.unit'
+    lastValidatedAst: DialogueAstPayload | null = null
+    isValid: boolean = false
+    validatedAt: string = ''
 }
