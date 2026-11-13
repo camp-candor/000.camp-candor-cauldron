@@ -14,7 +14,8 @@
     },
     "scripts": {
         "//__ DEV & RUNNER _________________________": "",
-        "dev": "npm run dev --workspace=@camp_candor/995.library",
+        "dev": "npm run dev --workspace=@camp_candor/dashboard",
+        "library:dev": "npm run dev --workspace=@camp_candor/995.library",
         "tui": "npx tsx apps/995.library/run.ts -t pivot",
         "dashboard:dev": "npm run dev --workspace=@camp_candor/dashboard",
         "dashboard:build": "npm run build --workspace=@camp_candor/dashboard",

@@ -68,6 +68,11 @@ export default defineConfig({
     integrations: [clerk(), react()],
     vite: {
         plugins: [tailwindcss(), edgeCompatibilityPlugin()],
+        server: {
+            host: '0.0.0.0',
+            port: 3000,
+            allowedHosts: true,
+        },
         ssr: {
             noExternal: [/@clerk/],
             external: [
