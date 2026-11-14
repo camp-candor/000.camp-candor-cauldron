@@ -16,6 +16,12 @@ export function reducer(
         case Act.INIT_FLEET:
             return Buzz.initFleet(clone(model), act.bale, state)
 
+        case Act.HYDRATE_FLEET:
+            return Buzz.hydrateFleet(clone(model), act.bale, state)
+
+        case Act.STAMP_TOMBSTONE:
+            return Buzz.stampClusterTombstone(clone(model), act.bale, state)
+
         default:
             return model
     }

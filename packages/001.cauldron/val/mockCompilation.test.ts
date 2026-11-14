@@ -154,4 +154,38 @@ describe('Phase 6 Offline Starter Episode Assembly & Zero-Cost Compilation Test 
         expect(model.lastRunSummary?.cloudCost).toBe('$0.00')
         expect(model.lastRunSummary?.totalFrames).toBe(58)
     })
+
+    it('L3.1: throws ZERO_BYTE_ASSET_POISON when given a 0-byte audio stem', () => {
+        const zeroWav = path.join(sandboxDir, 'zero.wav')
+        fs.writeFileSync(zeroWav, Buffer.alloc(0))
+        const model = new AudioModel()
+        expect(() =>
+            quantizeDuration(
+                model,
+                { idx: 'test-zero', src: zeroWav },
+                {} as any,
+            ),
+        ).toThrow(/ZERO_BYTE_ASSET_POISON/)
+    })
+
+    it('L3.2: rejects malformed or empty dialogue AST payload', () => {
+        const badAst = path.join(sandboxDir, 'bad_ast.json')
+        fs.writeFileSync(
+            badAst,
+            JSON.stringify({
+                scene_id: 'ep000_sc01',
+                location_id: 'loc',
+                lines: [],
+            }),
+            'utf8',
+        )
+        const model = new EpisodeModel()
+        expect(() =>
+            validateDialogueAst(
+                model,
+                { idx: 'test-bad-ast', src: badAst },
+                {} as any,
+            ),
+        ).toThrow(/Malformed or empty dialogue_ast\.json/)
+    })
 })

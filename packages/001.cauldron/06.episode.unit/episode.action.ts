@@ -15,4 +15,10 @@ export class UpdateEpisode implements Action {
     constructor(public bale: EpisodeBit) {}
 }
 
-export type Actions = InitEpisode | UpdateEpisode
+export const VALIDATE_DIALOGUE_AST = '[Episode action] Validate Dialogue Ast'
+export class ValidateDialogueAst implements Action {
+    readonly type = VALIDATE_DIALOGUE_AST
+    constructor(public bale: EpisodeBit) {}
+}
+
+export type Actions = InitEpisode | UpdateEpisode | ValidateDialogueAst

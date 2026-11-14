@@ -16,6 +16,9 @@ export function reducer(
         case Act.INIT_COMPILATION:
             return Buzz.initCompilation(clone(model), act.bale, state)
 
+        case Act.RUN_MOCK_COMPILATION:
+            return Buzz.runMockCompilation(clone(model), act.bale, state)
+
         default:
             return model
     }

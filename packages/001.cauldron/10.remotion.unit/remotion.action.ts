@@ -15,4 +15,10 @@ export class UpdateRemotion implements Action {
     constructor(public bale: RemotionBit) {}
 }
 
-export type Actions = InitRemotion | UpdateRemotion
+export const BUILD_REMOTION_ROOT = '[Remotion action] Build Remotion Root'
+export class BuildRemotionRoot implements Action {
+    readonly type = BUILD_REMOTION_ROOT
+    constructor(public bale: RemotionBit) {}
+}
+
+export type Actions = InitRemotion | UpdateRemotion | BuildRemotionRoot

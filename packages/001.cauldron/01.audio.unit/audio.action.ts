@@ -15,4 +15,10 @@ export class UpdateAudio implements Action {
     constructor(public bale: AudioBit) {}
 }
 
-export type Actions = InitAudio | UpdateAudio
+export const QUANTIZE_DURATION = '[Audio action] Quantize Duration'
+export class QuantizeDuration implements Action {
+    readonly type = QUANTIZE_DURATION
+    constructor(public bale: AudioBit) {}
+}
+
+export type Actions = InitAudio | UpdateAudio | QuantizeDuration

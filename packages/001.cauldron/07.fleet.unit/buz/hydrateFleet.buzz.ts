@@ -13,21 +13,8 @@ export const hydrateFleet = async (
     const role = (bal.src || 'systems').toLowerCase()
     const rootDir =
         bal.dat?.customWorkspaceRoot || path.resolve(process.cwd(), '..')
-    const versionsPath = path.join(process.cwd(), 'versions.json')
-
-    if (!fs.existsSync(versionsPath)) {
-        throw new Error(`versions.json manifest not found at ${versionsPath}`)
-    }
-
-    const manifest: FleetManifest = JSON.parse(
-        fs.readFileSync(versionsPath, 'utf8'),
-    )
-    const repos = manifest.repos || {}
-
-    cpy.status = 'HYDRATING'
-    cpy.lastHydratedRole = role
-    cpy.hydratedRepos = []
-    cpy.tombstonedClusters = []
+    const versionsPath =
+        bal.dat?.versionsPath || path.join(process.cwd(), 'versions.json')
 
     const logConsole = async (msg: string) => {
         if (global.LIBRARY && typeof global.LIBRARY.hunt === 'function') {
@@ -41,6 +28,48 @@ export const hydrateFleet = async (
             }
         }
     }
+
+    if (!fs.existsSync(versionsPath)) {
+        cpy.status = 'FAILED'
+        await logConsole('>> [FAIL] Missing versions.json manifest')
+        if (bal.slv) {
+            bal.slv({
+                fltBit: {
+                    idx: 'hydrate-fleet',
+                    val: 0,
+                    dat: { error: 'Missing versions.json manifest' },
+                },
+            })
+        }
+        return cpy
+    }
+
+    let manifest: FleetManifest
+    try {
+        manifest = JSON.parse(fs.readFileSync(versionsPath, 'utf8'))
+    } catch (err: any) {
+        cpy.status = 'FAILED'
+        await logConsole(
+            `>> [FAIL] Missing versions.json manifest (${err?.message || 'unparseable'})`,
+        )
+        if (bal.slv) {
+            bal.slv({
+                fltBit: {
+                    idx: 'hydrate-fleet',
+                    val: 0,
+                    dat: { error: 'Unparseable versions.json manifest' },
+                },
+            })
+        }
+        return cpy
+    }
+
+    const repos = manifest.repos || {}
+
+    cpy.status = 'HYDRATING'
+    cpy.lastHydratedRole = role
+    cpy.hydratedRepos = []
+    cpy.tombstonedClusters = []
 
     await logConsole(
         `>> [FLEET] Commencing fleet hydration for role: ${role.toUpperCase()}`,

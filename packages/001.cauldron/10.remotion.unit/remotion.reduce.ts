@@ -16,6 +16,9 @@ export function reducer(
         case Act.INIT_REMOTION:
             return Buzz.initRemotion(clone(model), act.bale, state)
 
+        case Act.BUILD_REMOTION_ROOT:
+            return Buzz.buildRemotionRoot(clone(model), act.bale, state)
+
         default:
             return model
     }

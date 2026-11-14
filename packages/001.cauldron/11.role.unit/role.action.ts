@@ -15,4 +15,10 @@ export class UpdateRole implements Action {
     constructor(public bale: RoleBit) {}
 }
 
-export type Actions = InitRole | UpdateRole
+export const SELECT_ROLE = '[Role action] Select Role'
+export class SelectRole implements Action {
+    readonly type = SELECT_ROLE
+    constructor(public bale: RoleBit) {}
+}
+
+export type Actions = InitRole | UpdateRole | SelectRole

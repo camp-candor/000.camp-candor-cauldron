@@ -15,4 +15,16 @@ export class UpdateFleet implements Action {
     constructor(public bale: FleetBit) {}
 }
 
-export type Actions = InitFleet | UpdateFleet
+export const HYDRATE_FLEET = '[Fleet action] Hydrate Fleet'
+export class HydrateFleet implements Action {
+    readonly type = HYDRATE_FLEET
+    constructor(public bale: FleetBit) {}
+}
+
+export const STAMP_TOMBSTONE = '[Fleet action] Stamp Tombstone'
+export class StampTombstone implements Action {
+    readonly type = STAMP_TOMBSTONE
+    constructor(public bale: FleetBit) {}
+}
+
+export type Actions = InitFleet | UpdateFleet | HydrateFleet | StampTombstone

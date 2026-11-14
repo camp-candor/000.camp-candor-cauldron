@@ -17,7 +17,24 @@ export const loadManifest = (
     }
 
     const raw = fs.readFileSync(manifestPath, 'utf8')
-    const parsed: VersionsManifestPayload = JSON.parse(raw)
+    let parsed: VersionsManifestPayload
+    try {
+        parsed = JSON.parse(raw)
+    } catch (err: any) {
+        if (global.LIBRARY && typeof global.LIBRARY.hunt === 'function') {
+            try {
+                void global.LIBRARY.hunt('[Console action] Update Console', {
+                    idx: 'cns00',
+                    src: `:: [WARN] Corrupt versions.json manifest: ${err?.message || 'JSON syntax error'}`,
+                })
+            } catch {
+                // Safe fallback
+            }
+        }
+        throw new Error(
+            `Corrupt versions.json manifest at ${manifestPath}: ${err?.message || 'JSON syntax error'}`,
+        )
+    }
 
     if (!parsed.manifest_version || !parsed.repos) {
         throw new Error('Malformed versions.json manifest payload')

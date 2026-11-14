@@ -15,4 +15,17 @@ export class UpdateDrift implements Action {
     constructor(public bale: DriftBit) {}
 }
 
-export type Actions = InitDrift | UpdateDrift
+export const EVALUATE_DRIFT = '[Drift action] Evaluate Drift'
+export class EvaluateDrift implements Action {
+    readonly type = EVALUATE_DRIFT
+    constructor(public bale: DriftBit) {}
+}
+
+export const RENDER_DRIFT_REPORT = '[Drift action] Render Drift Report'
+export class RenderDriftReport implements Action {
+    readonly type = RENDER_DRIFT_REPORT
+    constructor(public bale: DriftBit) {}
+}
+
+export type Actions =
+    InitDrift | UpdateDrift | EvaluateDrift | RenderDriftReport

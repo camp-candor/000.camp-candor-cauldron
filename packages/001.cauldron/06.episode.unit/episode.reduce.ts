@@ -16,6 +16,9 @@ export function reducer(
         case Act.INIT_EPISODE:
             return Buzz.initEpisode(clone(model), act.bale, state)
 
+        case Act.VALIDATE_DIALOGUE_AST:
+            return Buzz.validateDialogueAst(clone(model), act.bale, state)
+
         default:
             return model
     }

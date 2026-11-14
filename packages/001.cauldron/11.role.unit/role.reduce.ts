@@ -16,6 +16,9 @@ export function reducer(
         case Act.INIT_ROLE:
             return Buzz.initRole(clone(model), act.bale, state)
 
+        case Act.SELECT_ROLE:
+            return Buzz.selectContributorRole(clone(model), act.bale, state)
+
         default:
             return model
     }

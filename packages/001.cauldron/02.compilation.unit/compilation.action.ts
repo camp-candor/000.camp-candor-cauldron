@@ -15,4 +15,10 @@ export class UpdateCompilation implements Action {
     constructor(public bale: CompilationBit) {}
 }
 
-export type Actions = InitCompilation | UpdateCompilation
+export const RUN_MOCK_COMPILATION = '[Compilation action] Run Mock Compilation'
+export class RunMockCompilation implements Action {
+    readonly type = RUN_MOCK_COMPILATION
+    constructor(public bale: CompilationBit) {}
+}
+
+export type Actions = InitCompilation | UpdateCompilation | RunMockCompilation

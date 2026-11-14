@@ -16,6 +16,9 @@ export function reducer(
         case Act.INIT_AUDIO:
             return Buzz.initAudio(clone(model), act.bale, state)
 
+        case Act.QUANTIZE_DURATION:
+            return Buzz.quantizeDuration(clone(model), act.bale, state)
+
         default:
             return model
     }

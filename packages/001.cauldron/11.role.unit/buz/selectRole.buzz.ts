@@ -27,12 +27,21 @@ export const selectContributorRole = async (
             ? rawRole
             : 'systems'
     } else if (global.LIBRARY && typeof global.LIBRARY.hunt === 'function') {
+        const gridBit = await global.LIBRARY.hunt('[Grid action] Update Grid', {
+            x: 0,
+            y: 4,
+            xSpan: 4,
+            ySpan: 8,
+        })
         const choiceBit = await global.LIBRARY.hunt(
             '[Open action] Open Choice',
             {
                 idx: 'choice-role',
                 title: 'SELECT CONTRIBUTOR HYDRATION ROLE MASK',
+                dat: { clr0: 'black', clr1: 'yellow' },
+                src: 'vertical',
                 lst: roleChoices,
+                net: gridBit?.grdBit?.dat,
             },
         )
 

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import * as fs from 'fs'
 import * as path from 'path'
+import { execFileSync } from 'child_process'
 import { VersionsModel } from '../14.versions.unit/versions.model.js'
 import { loadManifest } from '../14.versions.unit/buz/loadManifest.buzz.js'
 import { DriftModel } from '../05.drift.unit/drift.model.js'
@@ -118,5 +119,82 @@ describe('Phase 5 Version Sentinel & Local Drift Evaluation Test Battery', () =>
 
         expect(renderedBit.dat.length).toBe(2)
         expect(model.records.length).toBe(2)
+    })
+
+    it('L3.2 & L3.3: classifies DIRTY working trees and DRIFTED SHAs accurately', () => {
+        const repoDir = path.join(mockParentRoot, '01.canon', '001.goblin-lore')
+        fs.mkdirSync(repoDir, { recursive: true })
+        execFileSync('git', ['init'], { cwd: repoDir })
+        execFileSync('git', ['config', 'user.email', 'test@example.com'], {
+            cwd: repoDir,
+        })
+        execFileSync('git', ['config', 'user.name', 'Test User'], {
+            cwd: repoDir,
+        })
+        fs.writeFileSync(path.join(repoDir, 'README.md'), 'init\n', 'utf8')
+        execFileSync('git', ['add', 'README.md'], { cwd: repoDir })
+        execFileSync('git', ['commit', '-m', 'init'], { cwd: repoDir })
+
+        // Clean repo with mismatched SHA -> DRIFTED
+        const driftedModel = new DriftModel()
+        evaluateDrift(
+            driftedModel,
+            {
+                idx: 'test-drifted',
+                src: mockManifestPath,
+                dat: { customParentRoot: mockParentRoot },
+            },
+            {} as any,
+        )
+        const driftedRec = driftedModel.records.find(
+            (r) => r.repo === '001.goblin-lore',
+        )
+        expect(driftedRec?.status).toBe('DRIFTED')
+        expect(driftedModel.hasDrift).toBe(true)
+
+        // Uncommitted modification -> DIRTY
+        fs.writeFileSync(path.join(repoDir, 'README.md'), 'dirty\n', 'utf8')
+        const dirtyModel = new DriftModel()
+        evaluateDrift(
+            dirtyModel,
+            {
+                idx: 'test-dirty',
+                src: mockManifestPath,
+                dat: { customParentRoot: mockParentRoot },
+            },
+            {} as any,
+        )
+        const dirtyRec = dirtyModel.records.find(
+            (r) => r.repo === '001.goblin-lore',
+        )
+        expect(dirtyRec?.status).toBe('DIRTY')
+        expect(dirtyModel.hasDrift).toBe(true)
+    })
+
+    it('L3.4: catches corrupt JSON manifest, logs warning to cns00, and throws cleanly', () => {
+        const badPath = path.join(sandboxDir, 'corrupt.json')
+        fs.writeFileSync(badPath, '{"manifest_version": ', 'utf8')
+        const logs: string[] = []
+        const origLib = global.LIBRARY
+        global.LIBRARY = {
+            hunt: (_act: string, bal: any) => {
+                if (bal?.src) logs.push(bal.src)
+            },
+        }
+        try {
+            const model = new VersionsModel()
+            expect(() =>
+                loadManifest(
+                    model,
+                    { idx: 'test-corrupt', src: badPath },
+                    {} as any,
+                ),
+            ).toThrow(/Corrupt versions\.json manifest/)
+            expect(logs.some((m) => m.includes('Corrupt versions.json'))).toBe(
+                true,
+            )
+        } finally {
+            global.LIBRARY = origLib
+        }
     })
 })

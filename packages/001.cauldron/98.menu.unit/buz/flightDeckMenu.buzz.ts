@@ -58,9 +58,12 @@ export const flightDeckMenu = async (
         case 'CONFIG_RIG':
             await ste.hunt('[Hardware action] Select Hardware', {})
             break
-        case 'HYDRATE_FLEET':
-            await ste.hunt('[Fleet action] Hydrate Fleet', {})
+        case 'HYDRATE_FLEET': {
+            const roleRes = await ste.hunt('[Role action] Select Role', {})
+            const chosenRole = roleRes?.rleBit?.src || 'systems'
+            await ste.hunt('[Fleet action] Hydrate Fleet', { src: chosenRole })
             break
+        }
         case 'AUDIT_VERSIONS':
             await ste.hunt('[Drift action] Render Drift Report', {})
             break

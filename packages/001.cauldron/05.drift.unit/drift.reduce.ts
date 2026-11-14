@@ -16,6 +16,12 @@ export function reducer(
         case Act.INIT_DRIFT:
             return Buzz.initDrift(clone(model), act.bale, state)
 
+        case Act.EVALUATE_DRIFT:
+            return Buzz.evaluateDrift(clone(model), act.bale, state)
+
+        case Act.RENDER_DRIFT_REPORT:
+            return Buzz.renderDriftReport(clone(model), act.bale, state)
+
         default:
             return model
     }
