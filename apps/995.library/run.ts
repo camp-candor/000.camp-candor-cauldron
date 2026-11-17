@@ -11,7 +11,11 @@ const require = createRequire(import.meta.url)
 const exec = promisify(execCb)
 
 // 1. Setup CLI
-program.option('--first').option('-t, --separator <char>')
+program
+    .option('--first')
+    .option('-t, --separator <char>')
+    .option('--boot-switchboard')
+    .option('--headless')
 program.parse(process.argv)
 const options = program.opts()
 
@@ -26,15 +30,6 @@ export interface PackageTerminalMetadata {
 /**
  * Sweeps packages/ for valid TypeScript packages and extracts Schema-Driven metadata.
  */
-export const registerCauldronFlightDeck = () => {
-    return {
-        packageKey: '001.cauldron',
-        displayName: 'Camp Candor Cauldron Flight Deck',
-        entryUnit: '98.menu.unit',
-        relativeDir: path.join('packages', '001.cauldron'),
-    }
-}
-
 export const getExistingPackages = (): PackageTerminalMetadata[] => {
     const packagesDir = path.resolve(import.meta.dirname, '../../packages')
     if (!fs.existsSync(packagesDir)) return []
@@ -135,6 +130,22 @@ const init = async () => {
     try {
         const LIBRARY = require(path.join(libPath, 'hunt'))
         global.LIBRARY = LIBRARY
+        ;(globalThis as any).LIBRARY = LIBRARY
+
+        // Task 5.2: Thin delegation to 00.library.unit BOOT_SWITCHBOARD when requested
+        // Keeps apps/995.library/995.library/** untouched while allowing unified boot.
+        try {
+            const BOOT_ACTION = '[Library action] Boot Switchboard'
+            if (process.argv.includes('--boot-switchboard') || process.argv.includes('--headless')) {
+                await LIBRARY.hunt(BOOT_ACTION, {
+                    startDir: process.cwd(),
+                    headless: process.argv.includes('--headless'),
+                })
+                if (process.argv.includes('--headless')) return
+            }
+        } catch {
+            // Fall through to legacy schema-driven runner on boot harness absence
+        }
 
         const LIBRARY_ACTION = require(
             path.join(libPath, '00.library.unit/library.action'),
@@ -171,24 +182,6 @@ const init = async () => {
             ]
             logWidget.setItems(logWidget.logLines)
             if (logWidget.screen) logWidget.screen.render()
-        }
-
-        // Graceful operator termination: q / Escape restore the terminal
-        // buffer, destroy the curses screen, and exit with code 0.
-        const exitScreen = cnsBit?.cnsBit?.dat?.bit?.screen
-        if (exitScreen && typeof exitScreen.key === 'function') {
-            const gracefulExit = () => {
-                try {
-                    if (typeof exitScreen.leave === 'function') {
-                        exitScreen.leave()
-                    }
-                    exitScreen.destroy()
-                } catch {
-                    // Fail-closed teardown guard during exit
-                }
-                process.exit(0)
-            }
-            exitScreen.key(['q', 'escape'], gracefulExit)
         }
 
         const MENU_ACTION_LIBRARY = require(
@@ -292,6 +285,16 @@ const init = async () => {
                     src: `:: [WARN] Skipping pivot [${pkg.name}]: ${err.message}`,
                 })
             }
+        }
+
+        // Discover & mount sibling fleet pivots across $FLEET_ROOT (e.g. Cauldron, Goblin Lore, Conductor)
+        try {
+            await LIBRARY.hunt('[Library action] Discover Fleet Pivots', {
+                startDir: import.meta.dirname,
+                registerMenus: true,
+            })
+        } catch {
+            // Fail-closed: continue with local pivots if fleet discovery encounters an error
         }
 
         await LIBRARY.hunt(CONSOLE_ACTION_LIBRARY.UPDATE_CONSOLE, {
